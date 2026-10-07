@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Produtos | Enterprise</title>
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-blue-hover: #0056b3;
+            --ios-green: #34C759;
+            --ios-red: #FF3B30;
+            --ios-orange: #FF9500;
+            --ios-gray-element: #E5E5EA;
+            --ios-text-main: #1C1C1E;
+            --ios-text-muted: #8E8E93;
+            --ios-glass-bg: rgba(250, 250, 255, 0.65);
+            --ios-glass-border: rgba(255, 255, 255, 0.8);
+            --ios-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        html { scroll-behavior: smooth; }
+        body { background: linear-gradient(135deg, #E2E2EC 0%, #F4F4F9 50%, #D8D8E5 100%); color: var(--ios-text-main); padding-top: 90px; min-height: 100vh; background-attachment: fixed;}
+        svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        
+        /* CABEÇALHO */
+        .app-header { position: fixed; top: 0; left: 0; width: 100%; height: 75px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(35px) saturate(150%); -webkit-backdrop-filter: blur(35px) saturate(150%); border-bottom: 0.5px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 1000; }
+        .header-left { display: flex; align-items: center; gap: 8px; }
+        .menu-btn { background: none; border: none; color: var(--ios-blue); cursor: pointer; display: flex; align-items: center; }
+        .app-header h1 { font-size: 16px; font-weight: 700; color: #000; letter-spacing: -0.5px; margin-top: 3px;}
+
+        .header-icons { display: flex; gap: 6px; align-items: flex-end; padding-bottom: 2px;}
+        .header-action { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 48px; transition: 0.3s;}
+        .icon-btn { background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--ios-text-main); transition: 0.2s; position: relative;}
+        .icon-btn:active { transform: scale(0.92); background: rgba(0,0,0,0.1);}
+        .icon-btn .badge { position: absolute; top: -4px; right: -4px; background: var(--ios-red); color: white; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 10px; border: 2px solid white; transition: 0.3s;}
+        .icon-btn .badge.hidden { opacity: 0; transform: scale(0); }
+        .icon-danger { color: var(--ios-red); background: rgba(255,59,48,0.1); }
+        .icon-label { font-size: 10px; font-weight: 700; color: var(--ios-text-muted); text-transform: uppercase; white-space: nowrap;}
+
+        /* MENU LATERAL E CONTADORES */
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(245, 245, 250, 0.95); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%); border-right: 1px solid rgba(255,255,255,0.5); z-index: 2001; transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1); overflow-y: auto; display: flex; flex-direction: column; box-shadow: 5px 0 20px rgba(0,0,0,0.1);}
+        .sidebar.active { transform: translateX(320px); }
+        .sidebar-header { position: sticky; top: 0; z-index: 10; padding: 20px 15px; border-bottom: 0.5px solid rgba(0,0,0,0.1); background: rgba(245, 245, 250, 0.95); display: flex; flex-direction: column; gap: 15px; }
+        .sidebar-header-top { display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h3 { font-size: 18px; font-weight: 700; color: var(--ios-text-main); }
+        .close-menu { background: rgba(0,0,0,0.06); border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; color: #333; cursor: pointer; font-size: 16px; font-weight: bold; line-height: 1;}
+        .ios-search-input { width: 100%; padding: 10px 14px; border: none; border-radius: 10px; background-color: rgba(0,0,0,0.06); font-size: 14px; color: var(--ios-text-main); transition: 0.2s; }
+        .ios-search-input:focus { outline: none; background-color: rgba(0,122,255,0.08); box-shadow: inset 0 0 0 1px var(--ios-blue); }
+        .menu-list { list-style: none; width: 100%; padding: 10px; }
+        .menu-list li { margin-bottom: 2px; }
+        .menu-item { padding: 14px 15px; font-size: 14px; font-weight: 700; color: var(--ios-text-main); cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 10px; transition: 0.2s; letter-spacing: 0.2px;}
+        .menu-item:active { background-color: rgba(0,0,0,0.08); }
+        .menu-item .arrow { color: var(--ios-text-muted); transition: 0.3s; font-size: 12px;}
+        .menu-item.open .arrow { transform: rotate(90deg); color: var(--ios-blue);}
+        
+        .menu-badge { background: rgba(0,0,0,0.08); color: var(--ios-text-main); padding: 0 6px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-right: 8px; min-width: 24px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .submenu .menu-badge { margin-right: 0; background: rgba(0,0,0,0.05); color: var(--ios-text-muted); }
+        
+        .submenu { list-style: none; display: none; padding-left: 5px; margin-top: 2px; margin-bottom: 8px;}
+        .submenu li { position: relative; padding: 12px 15px 12px 35px; font-size: 13px; font-weight: 500; color: #3A3A3C; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .submenu li::before { content: ""; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; border-radius: 50%; background-color: var(--ios-text-muted); opacity: 0.5; }
+        .submenu li:active { background-color: rgba(0,122,255,0.1); color: var(--ios-blue); }
+        .submenu li:active::before { background-color: var(--ios-blue); opacity: 1; }
+
+        /* CONTAINER E BOTÕES GERAIS */
+        .container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 10px 20px 40px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background-color: var(--ios-blue); color: white; border: none; padding: 12px 18px; font-size: 15px; font-weight: 600; border-radius: 14px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 6px rgba(0,122,255,0.2);}
+        .btn:active { opacity: 0.7; transform: scale(0.98); }
+        .btn-success { background-color: var(--ios-green); box-shadow: 0 2px 6px rgba(52,199,89,0.2);}
+        .btn-warning { background-color: var(--ios-orange); box-shadow: 0 2px 6px rgba(255,149,0,0.2);}
+        .btn-gray { background-color: var(--ios-gray-element); color: var(--ios-blue); box-shadow: none;}
+        .btn-request-light { background-color: #E5F0FF; color: var(--ios-blue); box-shadow: 0 2px 6px rgba(0,122,255,0.1); border: 1px solid rgba(0,122,255,0.2);}
+        .btn-danger-light { background-color: rgba(255, 59, 48, 0.1); color: var(--ios-red); box-shadow: none; border: none; }
+
+        /* ÁREA DE BUSCA E FILTROS GLOBAIS */
+        .search-area { margin-bottom: 25px; }
+        textarea { width: 100%; min-height: 120px; padding: 16px; background: rgba(255,255,255,0.9); border: 0.5px solid rgba(0,0,0,0.1); border-radius: 16px; font-size: 16px; resize: vertical; margin-bottom: 10px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); transition: 0.3s; }
+        textarea:focus { outline: none; border-color: var(--ios-blue); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); background: #FFF; }
+        
+        .search-filters-container { margin-bottom: 15px; }
+        .filter-label { font-size: 13px; font-weight: 600; color: var(--ios-text-muted); white-space: nowrap; margin-right: 5px;}
+        .pill-toggle { padding: 6px 12px; border-radius: 16px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .pill-toggle.active { background-color: var(--ios-blue); color: white; box-shadow: 0 2px 6px rgba(0,122,255,0.3); }
+        .pill-toggle.inactive { background-color: var(--ios-gray-element); color: var(--ios-text-muted); }
+
+        .results-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; padding: 0 5px; }
+        .results-header span.title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .disclaimer-text { font-size: 11px; color: var(--ios-text-muted); font-weight: normal; margin-top: 4px; line-height: 1.3;}
+        
+        /* CARTÕES DE RESULTADO */
+        .result-card { background: var(--ios-glass-bg); backdrop-filter: blur(25px) saturate(150%); border: 0.5px solid var(--ios-glass-border); border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--ios-shadow); transition: all 0.4s ease; }
+        .main-match { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+        .item-content-wrapper { display: flex; gap: 12px; flex-grow: 1; align-items: flex-start; }
+        
+        .img-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 70px; min-width: 70px; }
+        .img-thumb { width: 70px; height: 70px; min-width: 70px; object-fit: cover; border-radius: 12px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border: 0.5px solid rgba(0,0,0,0.1); transition: 0.2s; background: white;}
+        .img-thumb:active { transform: scale(0.95); opacity: 0.8;}
+        .img-disclaimer { font-size: 8px; color: var(--ios-text-muted); text-align: center; line-height: 1.1; font-weight: 500; }
+        
+        .item-details { flex-grow: 1; }
+        .searched-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(0, 122, 255, 0.1); color: var(--ios-blue); padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 12px; border: 0.5px solid rgba(0, 122, 255, 0.2); }
+        .item-details h3 { margin: 0 0 4px 0; font-size: 17px; font-weight: 600; line-height: 1.3;}
+        .item-details p.category { font-size: 13px; color: var(--ios-text-muted); font-weight: 500; margin-bottom: 4px;}
+        .ios-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+        .badge-exact { background: rgba(52, 199, 89, 0.15); color: #248A3D; }
+        .badge-partial { background: rgba(255, 149, 0, 0.15); color: #B26800; }
+        .badge-notfound { background: rgba(255, 59, 48, 0.15); color: #C92A20; }
+        
+        /* CÓDIGO E NCM (PILLS) */
+        .info-badge { display: inline-block; background-color: rgba(0,0,0,0.04); padding: 4px 8px; border-radius: 6px; font-family: monospace; font-weight: bold; color: var(--ios-text-main); font-size: 11px; margin-bottom: 4px; border: 1px solid rgba(0,0,0,0.08); }
+        .info-badge.ncm { color: var(--ios-red); }
+
+        .action-buttons { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; min-width: 150px;}
+
+        .request-box { background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.3); border-radius: 12px; padding: 15px; margin-top: 20px; text-align: center; }
+        .request-title { font-size: 14px; font-weight: 700; color: #B26800; margin-bottom: 12px; }
+
+        .alternatives-box { margin-top: 20px; border-top: 0.5px solid rgba(0,0,0,0.1); padding-top: 15px; }
+        .alternatives-title { font-size: 12px; font-weight: 600; color: var(--ios-text-muted); letter-spacing: 0.5px;}
+        .alt-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 0.5px solid rgba(0,0,0,0.05); font-size: 14px; gap: 10px; }
+        .alt-item:last-child { border-bottom: none; }
+        
+        .alt-item-content { display: flex; gap: 10px; align-items: center; flex-grow: 1; }
+        .img-wrapper-small { width: 45px; min-width: 45px; display:flex; flex-direction: column; align-items: center; gap:2px;}
+        .img-thumb-small { width: 45px; height: 45px; min-width: 45px; border-radius: 8px; }
+        .img-disclaimer-small { font-size: 7px; color: var(--ios-text-muted); text-align: center; line-height: 1; font-weight: 500; }
+        
+        .alt-text { flex-grow: 1; line-height: 1.3; font-weight: 500;}
+        .alt-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; min-width: 100px; }
+        
+        .btn-small { background: var(--ios-gray-element); color: var(--ios-blue); border: none; padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s;}
+        .btn-small.action-add { background: rgba(52, 199, 89, 0.15); color: #248A3D; }
+
+        /* PAINÉIS TIPO VIDRO */
+        .glass-panel { background: var(--ios-glass-bg); backdrop-filter: blur(35px) saturate(150%); border: 0.5px solid var(--ios-glass-border); border-radius: 20px; padding: 20px; margin-bottom: 25px; box-shadow: var(--ios-shadow); }
+        #totvsArea, #cartArea, #browseSection { scroll-margin-top: 100px; }
+        .panel-title { font-size: 18px; font-weight: 700; color: var(--ios-text-main); margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .panel-subtitle { font-size: 13px; color: var(--ios-text-muted); margin-bottom: 15px; }
+
+        .ios-table-wrapper { width: 100%; overflow-x: auto; background: rgba(255,255,255,0.7); border-radius: 14px; border: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 15px; -webkit-overflow-scrolling: touch;}
+        .ios-table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        .ios-table th, .ios-table td { padding: 12px 15px; border-bottom: 0.5px solid rgba(0,0,0,0.05); text-align: left; font-size: 13px; vertical-align: middle;}
+        .ios-table th { background-color: rgba(240,240,245,0.8); color: var(--ios-text-muted); font-weight: 600;}
+
+        /* ==========================================================================
+           CONGELAMENTO DE LISTAS (ESTILO LINHA CONGELADA EXCEL)
+           ========================================================================== */
+        .sticky-panel {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 80px;
+            z-index: 950;
+            transition: padding 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        }
+
+        .sticky-panel.is-frozen {
+            background: rgba(255, 255, 255, 0.94) !important;
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.16) !important;
+            border: 1px solid rgba(0, 122, 255, 0.35) !important;
+            padding: 14px 18px !important;
+        }
+
+        .sticky-panel.is-frozen .panel-subtitle {
+            display: none !important;
+        }
+
+        .sticky-panel.is-frozen .panel-title {
+            font-size: 15px !important;
+            margin-bottom: 8px !important;
+        }
+
+        .sticky-panel.is-frozen .btn {
+            padding: 8px 14px !important;
+            font-size: 13px !important;
+            border-radius: 10px !important;
+        }
+
+        /* Limitação a 3 itens visíveis com barra de rolagem interna */
+        #totvsArea.is-frozen .ios-table-wrapper {
+            max-height: 195px !important; /* Altura exata para cabeçalho + 3 linhas */
+            overflow-y: auto !important;
+            border: 1px solid rgba(0, 122, 255, 0.2) !important;
+            margin-bottom: 10px !important;
+        }
+
+        #cartArea.is-frozen .ios-table-wrapper {
+            max-height: 205px !important;
+            overflow-y: auto !important;
+            border: 1px solid rgba(255, 149, 0, 0.3) !important;
+            margin-bottom: 10px !important;
+        }
+
+        /* Cabeçalho sticky dentro do scroll da tabela */
+        .sticky-panel.is-frozen .ios-table thead th {
+            position: sticky;
+            top: 0;
+            background-color: rgba(240, 240, 245, 0.98);
+            z-index: 10;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        /* Barra de rolagem estilizada e suave estilo Apple */
+        .sticky-panel.is-frozen .ios-table-wrapper::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .sticky-panel.is-frozen .ios-table-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+        }
+        .sticky-panel.is-frozen .ios-table-wrapper::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        /* Quando não estiver congelado (no topo da tela), mostra tudo sem limite de 3 itens */
+        #totvsArea:not(.is-frozen) .ios-table-wrapper {
+            max-height: none !important;
+            overflow-y: visible !important;
+        }
+        #cartArea:not(.is-frozen) .ios-table-wrapper {
+            max-height: none !important;
+            overflow-y: visible !important;
+        }
+
+        /* MODAIS E TABELA MANUAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);}
+        .modal-content { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(25px); padding: 25px; border-radius: 20px; width: 400px; max-width: 95%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; max-height: 90vh; overflow-y: auto;}
+        
+        #modalCadastroManual .modal-content { width: 900px; max-width: 95%; padding: 20px; }
+        .table-manual { min-width: 700px; } 
+        .table-manual th { padding: 10px; }
+        .table-manual td { padding: 6px; }
+        
+        .modal-content h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--ios-text-muted); text-transform: uppercase; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; font-size: 15px; background-color: rgba(255,255,255,0.8); color: var(--ios-text-main); transition: 0.2s;}
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--ios-blue); box-shadow: 0 0 0 3px rgba(0,122,255,0.2);}
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-actions .btn { flex: 1; padding: 14px; font-size: 15px; }
+        .btn-remove-icon { background: rgba(255, 59, 48, 0.1); color: var(--ios-red); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;}
+
+        /* ZOOM IMAGEM E MARCA D'ÁGUA */
+        #modalZoom { z-index: 10005; backdrop-filter: blur(15px); }
+        .zoom-container { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 20px;}
+        
+        .image-watermark-wrapper { position: relative; display: inline-flex; justify-content: center; align-items: center; animation: zoomIn 0.3s forwards; }
+        .img-zoomed { max-width: 100%; max-height: 65vh; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); object-fit: contain; background: white; }
+        
+        .zoom-watermark {
+            position: absolute;
+            font-size: clamp(20px, 6vw, 42px);
+            font-weight: 900;
+            color: rgba(0, 0, 0, 0.15);
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            transform: rotate(-25deg);
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .item-added { opacity: 0.45; filter: grayscale(100%); pointer-events: none; transition: 0.4s;}
+        .item-added .btn-copy-only, .item-added .img-thumb { pointer-events: auto; filter: none;} 
+        .btn-added { background-color: var(--ios-gray-element) !important; color: var(--ios-text-muted) !important; pointer-events: none; box-shadow: none !important;}
+        
+        .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(30, 30, 30, 0.85); backdrop-filter: blur(15px); color: white; padding: 14px 24px; border-radius: 30px; font-weight: 500; font-size: 14px; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: opacity 0.3s ease; opacity: 1; display: flex; align-items: center; gap: 8px; white-space: normal; text-align: center; max-width: 90%; justify-content: center;}
+
+        /* TABELA DE DICAS TELA INICIAL */
+        .empty-state-box { background: var(--ios-glass-bg); border: 1px dashed rgba(0,0,0,0.1); border-radius: 16px; padding: 20px; margin-top: 20px;}
+
+        /* ANIMAÇÕES DO TUTORIAL DIDÁTICO */
+        .tut-icon-wrapper { width: 65px; height: 65px; background: rgba(0,122,255,0.1); color: var(--ios-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 4px 15px rgba(0,122,255,0.2); }
+        .tut-icon-wrapper svg { width: 32px; height: 32px; }
+        .tut-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tut-pulse { animation: tutPulse 2s infinite; }
+        @keyframes tutPulse { 0% { box-shadow: 0 0 0 0 rgba(0,122,255,0.4); } 70% { box-shadow: 0 0 0 8px rgba(0,122,255,0); } 100% { box-shadow: 0 0 0 0 rgba(0,122,255,0); } }
+        .tut-pulse-orange { animation: tutPulseOrange 2s infinite; display: inline-block; padding: 4px 10px; border-radius: 8px; background: var(--ios-orange); color: white; font-weight: bold;}
+        @keyframes tutPulseOrange { 0% { box-shadow: 0 0 0 0 rgba(255,149,0,0.5); } 70% { box-shadow: 0 0 0 8px rgba(255,149,0,0); } 100% { box-shadow: 0 0 0 0 rgba(255,149,0,0); } }
+        .didactic-arrow-down { display: block; color: var(--ios-red); animation: bounceDown 1s infinite; font-weight: bold; margin: 10px auto; font-size: 24px; text-align: center;}
+        @keyframes bounceDown { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+    </style>
+</head>
+<body>
+
+<svg style="display:none;">
+    <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></symbol>
+    <symbol id="icon-list" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><line x1="8" y1="14" x2="16" y2="14"></line></symbol>
+    <symbol id="icon-request" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></symbol>
+    <symbol id="icon-add" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></symbol>
+    <symbol id="icon-bolt" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></symbol>
+    <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></symbol>
+    <symbol id="icon-back" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></symbol>
+    <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></symbol>
+    <symbol id="icon-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></symbol>
+    <symbol id="icon-clear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></symbol>
+    <symbol id="icon-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></symbol>
+</svg>
+
+<header class="app-header">
+    <div class="header-left">
+        <button class="menu-btn" onclick="toggleSidebar()"><svg><use href="#icon-menu"></use></svg></button>
+        <h1>Portal Produtos</h1>
+    </div>
+    <div class="header-icons">
+        <div class="header-action">
+            <button class="icon-btn" onclick="irParaInicio()" title="Início">
+                <svg><use href="#icon-home"></use></svg>
+            </button>
+            <span class="icon-label">Início</span>
+        </div>
+        
+        <div class="header-action" id="headerBtnLimpar" style="display: none;">
+            <button class="icon-btn icon-danger" onclick="limparTudo()" title="Limpar Tudo">
+                <svg><use href="#icon-clear"></use></svg>
+            </button>
+            <span class="icon-label" style="color:var(--ios-red);">Limpar</span>
+        </div>
+        
+        <div style="width: 1px; height: 30px; background: rgba(0,0,0,0.1); margin: 0 4px;"></div>
+        
+        <div class="header-action">
+            <button class="icon-btn" onclick="abrirTutorial()" title="Ajuda">
+                <svg><use href="#icon-help"></use></svg>
+            </button>
+            <span class="icon-label">Ajuda</span>
+        </div>
+        
+        <div class="header-action" id="headerBtnLista" style="display: none;">
+            <button class="icon-btn" onclick="scrollToSection('totvsArea')" title="Lista para Consulta">
+                <svg><use href="#icon-list"></use></svg>
+                <span class="badge hidden" id="badgeTotvs">0</span>
+            </button>
+            <span class="icon-label">Lista</span>
+        </div>
+
+        <div class="header-action">
+            <button class="icon-btn" onclick="acaoBotaoCadastros()" title="Solicitações de Cadastro">
+                <svg id="iconHeaderTable"><use href="#icon-table"></use></svg>
+                <svg id="iconHeaderRequest" style="display:none;"><use href="#icon-request"></use></svg>
+                <span class="badge hidden" id="badgeCadastros">0</span>
+            </button>
+            <span class="icon-label" id="lblHeaderCadastros" style="white-space: nowrap;">Solicitar Cadastro</span>
+        </div>
+    </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-header-top">
+            <h3>Departamentos</h3>
+            <button class="close-menu" onclick="toggleSidebar()">✕</button>
+        </div>
+        <input type="text" id="menuSearchInput" class="ios-search-input" placeholder="🔍 Filtrar departamentos..." onkeyup="filtrarMenuLateral()">
+    </div>
+    <ul class="menu-list" id="menuList">
+        <li style="padding: 20px; text-align: center; color: var(--ios-text-muted); font-size: 13px;">Carregando...</li>
+    </ul>
+</div>
+
+<div class="container">
+    
+    <div class="search-area" id="searchSection">
+        <textarea id="searchInput" placeholder="Cole linhas de e-mail ou digite o nome dos produtos..."></textarea>
+        
+        <div class="search-filters-container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                <span class="filter-label">Buscar por:</span>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn-small" style="font-size:10px; padding:4px 8px; width:auto;" onclick="setAllSearchFilters(true)">✓ Todos</button>
+                    <button class="btn-small" style="font-size:10px; padding:4px 8px; width:auto; background:rgba(255,59,48,0.1); color:var(--ios-red);" onclick="setAllSearchFilters(false)">✕ Nenhum</button>
+                </div>
+            </div>
+            <div class="search-filters-pills" style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="pill-toggle active" data-type="desc" onclick="toggleSearchMode(this)">Descrição</button>
+                <button class="pill-toggle active" data-type="pn" onclick="toggleSearchMode(this)">Part Number</button>
+                <button class="pill-toggle active" data-type="cod" onclick="toggleSearchMode(this)">Código</button>
+                <button class="pill-toggle active" data-type="cat" onclick="toggleSearchMode(this)">Categoria</button>
+                <button class="pill-toggle active" data-type="sub" onclick="toggleSearchMode(this)">Subcategoria</button>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button id="btnLimparPesquisa" class="btn btn-danger-light" onclick="limparQuadroPesquisa()" style="width: 30%; border-radius: 12px; padding: 14px; display: none;">
+                <svg><use href="#icon-clear"></use></svg> Limpar
+            </button>
+            <button class="btn" onclick="executeSearch()" style="flex-grow: 1; padding: 14px; font-size: 16px;">
+                <svg><use href="#icon-search"></use></svg> Analisar Itens
+            </button>
+        </div>
+        <span id="loading" style="display: block; text-align: center; margin-top: 10px;">Conectando ao banco de dados...</span>
+        
+        <!-- TABELA ELEGANTE NA TELA INICIAL -->
+        <div id="initialTable" class="empty-state-box">
+            <h4 style="margin-bottom:10px; color:var(--ios-text-main);"><svg style="width:16px; height:16px; margin-right:5px; vertical-align:middle; color:var(--ios-blue);"><use href="#icon-info"></use></svg> Dicas de Pesquisa</h4>
+            <div class="ios-table-wrapper" style="margin:0; box-shadow:none; background: transparent;">
+                <table class="ios-table" style="min-width: unset;">
+                    <tbody>
+                        <tr><td style="color:var(--ios-text-muted);">Por Texto:</td><td><b>"Mesa de Reunião Retangular"</b></td></tr>
+                        <tr><td style="color:var(--ios-text-muted);">Por Part Number:</td><td><b>"JL727B"</b> (Switch HPE)</td></tr>
+                        <tr><td style="color:var(--ios-text-muted);">Em Massa:</td><td>Cole o conteúdo inteiro de um e-mail na caixa acima.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL CATÁLOGO -->
+    <div class="glass-panel" id="browseSection" style="display:none; padding:0; overflow:hidden;">
+        <div style="padding: 20px; border-bottom: 0.5px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <p style="font-size: 12px; color: var(--ios-text-muted); text-transform: uppercase; font-weight:600;">Catálogo</p>
+                    <h2 class="panel-title" id="browseTitle" style="margin-bottom: 2px;">Categoria</h2>
+                </div>
+                <button class="btn btn-gray" style="padding: 8px 12px; font-size: 13px;" onclick="voltarParaPesquisa()"><svg><use href="#icon-back"></use></svg> Voltar</button>
+            </div>
+            
+            <div id="catalogoFiltersContainer" style="display:none; margin-bottom: 15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <span style="font-size:12px; font-weight:700; color:var(--ios-text-muted);">Filtrar Subcategorias:</span>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-small" style="font-size:10px; padding:4px 8px; width:auto;" onclick="selectAllCatalogoSubcat(true)">✓ Todas</button>
+                        <button class="btn-small" style="font-size:10px; padding:4px 8px; width:auto; background:rgba(255,59,48,0.1); color:var(--ios-red);" onclick="selectAllCatalogoSubcat(false)">✕ Nenhuma</button>
+                    </div>
+                </div>
+                <div id="catalogoPillsContainer" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;"></div>
+            </div>
+
+            <input type="text" id="catalogoSearchInput" class="ios-search-input" placeholder="🔍 Filtrar itens nesta lista por texto..." onkeyup="aplicarFiltroCatalogo()">
+        </div>
+        <div class="ios-table-wrapper" style="margin:0; border:none; border-radius:0;">
+            <table class="ios-table">
+                <thead><tr><th style="width: 90px;">Código</th><th>Produto (Foto)</th><th style="width: 150px; text-align: center;">Ações</th></tr></thead>
+                <tbody id="browseTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SENTINELA PARA IDENTIFICAR ROLAGEM DO QUADRO TOTVS -->
+    <div id="totvsSentinel" style="height: 1px; margin-bottom: -1px; pointer-events: none;"></div>
+
+    <!-- PAINEL LISTA PARA CONSULTA (CONGELÁVEL) -->
+    <div id="totvsArea" class="glass-panel sticky-panel" style="display: none;">
+        <h3 class="panel-title"><svg style="color:var(--ios-blue);"><use href="#icon-list"></use></svg> Lista para Consulta</h3>
+        <p class="panel-subtitle">Códigos prontos para consulta no sistema.</p>
+        <div class="ios-table-wrapper">
+            <table class="ios-table">
+                <thead><tr><th style="width: 60px; text-align: center;">Qtd</th><th style="width: 90px;">Código</th><th>Produto</th><th style="width: 100px; text-align: center;">Ações</th></tr></thead>
+                <tbody id="tabelaTotvsBody"></tbody>
+            </table>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-gray" onclick="copiarApenasCodigos()"><svg><use href="#icon-copy"></use></svg> Só Códigos</button>
+            <button class="btn btn-success" onclick="copiarTabelaCompleta()"><svg><use href="#icon-copy"></use></svg> Tabela Completa</button>
+            <button class="btn" style="background-color: var(--ios-blue);" onclick="enviarListaEmail()"><svg><use href="#icon-mail"></use></svg> Enviar por E-mail</button>
+            <button class="btn btn-danger-light" onclick="limparListaConsulta()"><svg><use href="#icon-trash"></use></svg> Limpar Lista</button>
+        </div>
+        
+        <div id="fallbackEmailAreaTotvs" style="display:none; margin-top: 15px; text-align: center; font-size: 13px;">
+            <span style="color: var(--ios-text-muted);">O e-mail não abriu automaticamente?</span><br>
+            <a id="outlookWebBtnTotvs" href="#" target="_blank" class="btn btn-gray" style="margin-top: 8px; padding: 8px 12px; font-size: 13px;">
+                Abrir no Outlook Web
+            </a>
+        </div>
+    </div>
+
+    <!-- SENTINELA PARA IDENTIFICAR ROLAGEM DO QUADRO DE SOLICITAÇÕES -->
+    <div id="cartSentinel" style="height: 1px; margin-bottom: -1px; pointer-events: none;"></div>
+
+    <!-- PAINEL SOLICITAÇÕES EQUIPE (CONGELÁVEL) -->
+    <div id="cartArea" class="glass-panel sticky-panel" style="display: none; border: 1px solid rgba(255, 149, 0, 0.4);">
+        <h3 class="panel-title" style="color: var(--ios-orange);"><svg><use href="#icon-request"></use></svg> Solicitações de Cadastro</h3>
+        <p class="panel-subtitle">Itens que serão enviados para a equipe responsável criar no sistema. Você pode editar os detalhes abaixo antes de enviar.</p>
+        
+        <div class="ios-table-wrapper" style="margin-bottom: 20px;">
+            <table class="ios-table table-manual" id="cartTable">
+                <thead>
+                    <tr>
+                        <th style="width: 45%; min-width: 250px;">Descrição do Item *</th>
+                        <th style="width: 20%; min-width: 130px;">Part Number</th>
+                        <th style="width: 15%; min-width: 100px;">NCM *</th>
+                        <th style="width: 10%; min-width: 80px;">UN</th>
+                        <th style="width: 10%; text-align:center;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="cartTableBody"></tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-warning" style="width: 100%;" id="btnSendCart" onclick="enviarTodasSolicitacoes()">
+            <svg><use href="#icon-request"></use></svg> Enviar Solicitações para a Equipe
+        </button>
+        
+        <div id="fallbackEmailAreaCart" style="display:none; margin-top: 15px; text-align: center; font-size: 13px;">
+            <span style="color: var(--ios-text-muted);">O e-mail não abriu automaticamente?</span><br>
+            <a id="outlookWebBtnCart" href="#" target="_blank" class="btn btn-gray" style="margin-top: 8px; padding: 8px 12px; font-size: 13px;">
+                Abrir no Outlook Web
+            </a>
+        </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="results-area" id="resultsArea" style="display: none;">
+        <div class="results-header" style="align-items: flex-end;">
+            <div>
+                <span class="title">Resultados</span>
+                <div class="disclaimer-text">* Imagens meramente ilustrativas, podendo não refletir a marca ou modelo exato em estoque.</div>
+            </div>
+            <span id="resultSummary" style="color: var(--ios-text-muted); font-size: 14px; font-weight:normal;"></span>
+        </div>
+
+        <div id="resultsList"></div>
+    </div>
+</div>
+
+<!-- MODAL DE CADASTRO DETALHADO -->
+<div id="modalCadastro" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Detalhes do Cadastro</h3>
+        <p style="font-size: 14px; color: var(--ios-text-muted); margin-bottom: 20px;" id="modalItemName"></p>
+        
+        <div class="form-group">
+            <label>Part Number (PN)</label>
+            <input type="text" id="modPN" placeholder="Ex: 33001623 (Opcional)" oninput="verificarPNUnico(this)">
+            <div id="pnWarningUnico" style="color: var(--ios-red); font-size: 12px; font-weight: bold; display: none; margin-top: 5px;"></div>
+        </div>
+        
+        <div class="form-group">
+            <label>NCM Fiscal *</label>
+            <input type="text" id="modNCM" placeholder="Ex: 8517.62.59 (Obrigatório *)">
+        </div>
+
+        <div class="form-group">
+            <label>Unidade de Medida (UN)</label>
+            <select id="modUN">
+                <option value="UN">UN - UNIDADE</option>
+                <option value="PC">PC - PEÇA</option>
+                <option value="CX">CX - CAIXA</option>
+                <option value="KG">KG - QUILOGRAMA</option>
+                <option value="MT">MT - METRO</option>
+                <option value="RL">RL - ROLO</option>
+                <option value="PR">PR - PAR</option>
+                <option value="CJ">CJ - CONJUNTO</option>
+                <option value="LT">LT - LITRO</option>
+                <option value="GL">GL - GALÃO</option>
+                <option value="PCT">PCT - PACOTE</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-gray" onclick="fecharModal()">Cancelar</button>
+            <button class="btn btn-success" onclick="confirmarCadastroModal()">Adicionar à Fila</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CADASTRO MANUAL (EXCEL-LIKE) -->
+<div id="modalCadastroManual" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Solicitar Cadastro Manual</h3>
+        <p style="font-size: 13px; color: var(--ios-text-muted); margin-bottom: 15px;">Dica: Você pode copiar várias linhas do Excel e colar na Descrição!</p>
+        
+        <div class="ios-table-wrapper" style="max-height: 50vh;">
+            <table class="ios-table table-manual" id="tabelaCadastroManual">
+                <thead>
+                    <tr>
+                        <th style="width: 45%; min-width: 250px;">Descrição do Item *</th>
+                        <th style="width: 20%; min-width: 130px;">Part Number</th>
+                        <th style="width: 15%; min-width: 100px;">NCM *</th>
+                        <th style="width: 10%; min-width: 80px;">UN</th>
+                        <th style="width: 10%; text-align:center;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCadastroManualBody"></tbody>
+            </table>
+        </div>
+        
+        <div style="text-align: left; margin-bottom: 20px;">
+            <button class="btn btn-gray" style="font-size: 13px; padding: 8px 12px;" onclick="addLinhaManual()">+ Adicionar Nova Linha</button>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-gray" onclick="fecharCadastroManual()">Cancelar</button>
+            <button class="btn btn-success" onclick="enviarCadastroManual()">Salvar na Fila de Envio</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE ZOOM DE IMAGEM COM MARCA D'ÁGUA -->
+<div id="modalZoom" class="modal-overlay" onclick="fecharZoom()">
+    <div class="zoom-container">
+        <button class="icon-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.9); z-index: 10;" onclick="fecharZoom()">✕</button>
+        
+        <div class="image-watermark-wrapper">
+            <img id="imagemZoom" class="img-zoomed" src="">
+            <div class="zoom-watermark">Imagem Ilustrativa</div>
+        </div>
+        
+        <p id="legendaZoom" style="color: white; font-weight: 600; margin-top: 15px; font-size: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-align: center; max-width: 90%;"></p>
+    </div>
+</div>
+
+<!-- TUTORIAL INTERATIVO -->
+<div id="modalTutorial" class="modal-overlay">
+    <div class="modal-content" style="padding: 0; overflow: hidden; width: 450px; text-align: left;">
+        <div id="tutorialHeader" style="background: var(--ios-blue); color: white; padding: 20px; text-align: center; position: relative;">
+            <button class="icon-btn" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); color:white; width:28px; height:28px;" onclick="fecharTutorial()">✕</button>
+            <h3 style="margin: 0; color: white;">Central de Ajuda</h3>
+        </div>
+        
+        <div id="tutorialBody" style="padding: 25px 25px 15px; min-height: 250px; position: relative;"></div>
+        
+        <div style="background: rgba(0,0,0,0.03); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.05);">
+            <div id="tutorialDots" style="display:flex; gap: 6px;"></div>
+            <div style="display:flex; gap: 8px;">
+                <button class="btn btn-gray" id="btnTutPrev" style="padding: 8px 15px; font-size: 13px;" onclick="mudarStepTutorial(-1)">Anterior</button>
+                <button class="btn" id="btnTutNext" style="padding: 8px 15px; font-size: 13px;" onclick="mudarStepTutorial(1)">Próximo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const iSVG = {
+        copy: "<svg><use href='#icon-copy'></use></svg>",
+        add: "<svg><use href='#icon-add'></use></svg>",
+        check: "<svg><use href='#icon-check'></use></svg>",
+        bolt: "<svg><use href='#icon-bolt'></use></svg>",
+        edit: "<svg><use href='#icon-edit'></use></svg>",
+        trash: "<svg><use href='#icon-trash'></use></svg>",
+        request: "<svg><use href='#icon-request'></use></svg>",
+        search: "<svg style='width:14px;height:14px;'><use href='#icon-search'></use></svg>",
+        info: "<svg><use href='#icon-info'></use></svg>",
+        menu: "<svg><use href='#icon-menu'></use></svg>",
+        list: "<svg><use href='#icon-list'></use></svg>",
+        mail: "<svg><use href='#icon-mail'></use></svg>"
+    };
+
+    const JSON_DATA_URL = "https://portalprodutos-896cb-default-rtdb.firebaseio.com/produtos.json"; 
+    let produtosDatabase = [];
+    let filaSolicitacoes = []; 
+    let listaTotvs = [];       
+    let produtoSendoCadastrado = "";
+    let pesquisaEstaAtiva = false; 
+
+    let searchModes = { desc: true, pn: true, cod: true, cat: true, sub: true };
+
+    window.onload = async () => {
+        initStickyListWatchers(); // Inicializa observadores de congelamento
+
+        try {
+            const response = await fetch(JSON_DATA_URL);
+            if (response.ok) {
+                const produtosBrutos = await response.json();
+                
+                produtosDatabase = produtosBrutos.filter(p => {
+                    if (!p) return false;
+                    const desc = (p.Produto || "").trim().toUpperCase();
+                    const cat = (p.Categoria || "").trim().toUpperCase();
+                    const sub = (p.Subcategoria || "").trim().toUpperCase();
+
+                    if (desc === "XX") return false;
+                    if (cat.includes("DIVERSOS")) return false;
+                    if (sub.includes("DIVERSOS")) return false;
+                    return true;
+                });
+                
+                document.getElementById('loading').style.display = 'none';
+                construirMenuLateral();
+                sincronizarBotoesCabecalho();
+            }
+        } catch (error) { document.getElementById('loading').innerText = "Falha de conexão com a base."; }
+    };
+
+    // Observa o scroll da página para congelar/descongelar o quadro e limitar a 3 itens
+    function initStickyListWatchers() {
+        const headerOffset = 82; // Altura do cabeçalho fixo + margem
+
+        const checkSticky = () => {
+            const totvs = document.getElementById('totvsArea');
+            const sTotvs = document.getElementById('totvsSentinel');
+            if (totvs && sTotvs && totvs.style.display !== 'none') {
+                const rect = sTotvs.getBoundingClientRect();
+                if (rect.top <= headerOffset) {
+                    totvs.classList.add('is-frozen');
+                } else {
+                    totvs.classList.remove('is-frozen');
+                }
+            } else if (totvs) {
+                totvs.classList.remove('is-frozen');
+            }
+
+            const cart = document.getElementById('cartArea');
+            const sCart = document.getElementById('cartSentinel');
+            if (cart && sCart && cart.style.display !== 'none') {
+                const rect = sCart.getBoundingClientRect();
+                if (rect.top <= headerOffset) {
+                    cart.classList.add('is-frozen');
+                } else {
+                    cart.classList.remove('is-frozen');
+                }
+            } else if (cart) {
+                cart.classList.remove('is-frozen');
+            }
+        };
+
+        window.addEventListener('scroll', checkSticky, { passive: true });
+        window.addEventListener('resize', checkSticky, { passive: true });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        sincronizarBotoesCabecalho();
+        const btnLimpar = document.getElementById('btnLimparPesquisa');
+        if (this.value.trim() !== '') {
+            btnLimpar.style.display = 'flex';
+        } else {
+            btnLimpar.style.display = 'none';
+        }
+    });
+
+    function limparQuadroPesquisa() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('btnLimparPesquisa').style.display = 'none';
+        
+        document.getElementById('resultsList').innerHTML = '';
+        document.getElementById('globalFiltersContainer') ? document.getElementById('globalFiltersContainer').innerHTML = '' : null;
+        document.getElementById('globalFiltersContainer') ? document.getElementById('globalFiltersContainer').style.display = 'none' : null;
+        document.getElementById('resultsArea').style.display = 'none';
+        document.getElementById('resultSummary').innerText = '';
+        document.getElementById('initialTable').style.display = 'block';
+        
+        pesquisaEstaAtiva = false;
+        sincronizarBotoesCabecalho();
+        document.getElementById('searchInput').focus();
+    }
+
+    function getImagemBusca(termo, categoria, subcategoria, pn) {
+        let busca = termo;
+        if (pn && pn !== '0' && pn.toUpperCase() !== 'N/C' && pn.length > 2) busca += ' ' + pn;
+        if (categoria && categoria !== '-' && categoria !== 'Sem Categoria') busca += ' ' + categoria;
+        if (subcategoria && subcategoria !== '-') busca += ' ' + subcategoria;
+        busca += ' produto';
+        
+        return `https://tse2.mm.bing.net/th?q=${encodeURIComponent(busca)}&w=150&h=150&c=7&rs=1&p=0`;
+    }
+
+    function abrirZoom(imgElement, legenda, event) {
+        event.stopPropagation();
+        const urlAlta = imgElement.src.replace('&w=150&h=150', '&w=600&h=600');
+        document.getElementById('imagemZoom').src = urlAlta;
+        document.getElementById('legendaZoom').innerText = legenda;
+        document.getElementById('modalZoom').style.display = 'flex';
+    }
+
+    function fecharZoom() {
+        document.getElementById('modalZoom').style.display = 'none';
+        document.getElementById('imagemZoom').src = "";
+    }
+
+    function sincronizarBotoesCabecalho() {
+        const btnLimpar = document.getElementById('headerBtnLimpar');
+        const btnLista = document.getElementById('headerBtnLista');
+        const lblCadastros = document.getElementById('lblHeaderCadastros');
+        const iconTable = document.getElementById('iconHeaderTable');
+        const iconRequest = document.getElementById('iconHeaderRequest');
+        const searchVal = document.getElementById('searchInput').value.trim();
+
+        if (pesquisaEstaAtiva || listaTotvs.length > 0 || filaSolicitacoes.length > 0 || searchVal !== '') {
+            btnLimpar.style.display = 'flex';
+        } else {
+            btnLimpar.style.display = 'none';
+        }
+
+        if (listaTotvs.length > 0) {
+            btnLista.style.display = 'flex';
+        } else {
+            btnLista.style.display = 'none';
+        }
+
+        if (pesquisaEstaAtiva || filaSolicitacoes.length > 0) {
+            lblCadastros.innerText = "Solicitações";
+            iconTable.style.display = "none";
+            iconRequest.style.display = "block";
+        } else {
+            lblCadastros.innerText = "Solicitar Cadastro";
+            iconTable.style.display = "block";
+            iconRequest.style.display = "none";
+        }
+    }
+
+    function setAllSearchFilters(selecionarTodos) {
+        if (selecionarTodos) {
+            searchModes = { desc: true, pn: true, cod: true, cat: true, sub: true };
+        } else {
+            searchModes = { desc: true, pn: false, cod: false, cat: false, sub: false };
+            mostrarToast("A busca por Descrição foi mantida como padrão.", "rgba(255, 149, 0, 0.9)");
+        }
+        
+        document.querySelectorAll('.search-filters-pills .pill-toggle').forEach(btn => {
+            const type = btn.getAttribute('data-type');
+            if (searchModes[type]) {
+                btn.classList.add('active');
+                btn.classList.remove('inactive');
+            } else {
+                btn.classList.remove('active');
+                btn.classList.add('inactive');
+            }
+        });
+    }
+
+    function toggleSearchMode(btn) {
+        const type = btn.getAttribute('data-type');
+        searchModes[type] = !searchModes[type];
+        
+        if (searchModes[type]) {
+            btn.classList.add('active');
+            btn.classList.remove('inactive');
+        } else {
+            btn.classList.remove('active');
+            btn.classList.add('inactive');
+        }
+        
+        if (!searchModes.desc && !searchModes.pn && !searchModes.cod && !searchModes.cat && !searchModes.sub) {
+            searchModes.desc = true;
+            document.querySelector('.pill-toggle[data-type="desc"]').classList.add('active');
+            document.querySelector('.pill-toggle[data-type="desc"]').classList.remove('inactive');
+            mostrarToast("Pelo menos um filtro de busca deve estar ativo.", "rgba(255, 149, 0, 0.9)");
+        }
+    }
+
+    function acaoBotaoCadastros() {
+        if (pesquisaEstaAtiva || filaSolicitacoes.length > 0) {
+            document.getElementById('cartArea').style.display = 'block';
+            scrollToSection('cartArea');
+        } else {
+            abrirCadastroManual();
+        }
+    }
+
+    function abrirCadastroManual(descInicial = '') {
+        document.getElementById('tabelaCadastroManualBody').innerHTML = '';
+        addLinhaManual(descInicial); 
+        document.getElementById('modalCadastroManual').style.display = 'flex';
+    }
+
+    function solicitarNcmDiferente(produtoNome) {
+        if (filaSolicitacoes.length >= 50) { alert("Limite de Lote Atingido!"); return; }
+        if (!filaSolicitacoes.some(item => item.produto === produtoNome)) {
+            filaSolicitacoes.push({ produto: produtoNome, partNumber: "", ncm: "", un: "UN" });
+            atualizarUICarrinho();
+            mostrarToast("Item adicionado à fila. Digite o NCM obrigatório!", "rgba(52, 199, 89, 0.9)");
+        }
+        document.getElementById('cartArea').style.display = 'block';
+        scrollToSection('cartArea');
+    }
+
+    function fecharCadastroManual() { document.getElementById('modalCadastroManual').style.display = 'none'; }
+
+    function addLinhaManual(descInicial = '') {
+        const tbody = document.getElementById('tabelaCadastroManualBody');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" class="ios-search-input manual-desc" value="${descInicial}" placeholder="Descrição do Item..." style="padding:10px;"></td>
+            <td>
+                <input type="text" class="ios-search-input manual-pn" placeholder="Opcional" oninput="verificarPNMultiplo(this)" style="padding:10px;">
+                <div class="pn-warning-multi" style="color: var(--ios-red); font-size: 11px; font-weight: bold; display: none; margin-top: 4px;"></div>
+            </td>
+            <td>
+                <input type="text" class="ios-search-input manual-ncm" placeholder="Obrigatório *" style="padding:10px;">
+            </td>
+            <td>
+                <select class="ios-search-input manual-un" style="padding:10px;">
+                    <option value="UN">UN</option><option value="PC">PC</option><option value="CX">CX</option>
+                    <option value="KG">KG</option><option value="MT">MT</option><option value="RL">RL</option>
+                    <option value="PR">PR</option><option value="CJ">CJ</option><option value="LT">LT</option>
+                    <option value="GL">GL</option><option value="PCT">PCT</option>
+                </select>
+            </td>
+            <td style="text-align:center;"><button class="btn-remove-icon" style="margin:auto;" onclick="this.closest('tr').remove()"><svg><use href="#icon-trash"></use></svg></button></td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function verificarPNMultiplo(input) {
+        const val = input.value.trim().toUpperCase();
+        const warning = input.nextElementSibling;
+        
+        if (val && val !== '0') {
+            const found = produtosDatabase.find(p => (p.PartNumber || '').trim().toUpperCase() === val);
+            if (found) {
+                warning.innerText = `⚠️ Cód: ${found.Codigo}`;
+                warning.style.display = 'block';
+                input.style.borderColor = 'var(--ios-red)';
+                input.style.boxShadow = 'inset 0 0 0 1px var(--ios-red)';
+                return;
+            }
+        }
+        warning.style.display = 'none';
+        input.style.borderColor = '';
+        input.style.boxShadow = '';
+    }
+
+    function enviarCadastroManual() {
+        const linhas = document.querySelectorAll('#tabelaCadastroManualBody tr');
+        let adicionados = 0;
+        let ncmFaltando = false;
+        
+        linhas.forEach(tr => {
+            const desc = tr.querySelector('.manual-desc').value.trim();
+            const pn = tr.querySelector('.manual-pn').value.trim().toUpperCase();
+            const ncm = tr.querySelector('.manual-ncm').value.trim();
+            const un = tr.querySelector('.manual-un').value;
+            
+            if (desc && !ncm) {
+                ncmFaltando = true;
+                tr.querySelector('.manual-ncm').style.border = "1px solid var(--ios-red)";
+            } else if (desc && ncm) {
+                tr.querySelector('.manual-ncm').style.border = "none";
+                filaSolicitacoes.push({ produto: desc, partNumber: pn, ncm: ncm, un: un });
+                adicionados++;
+            }
+        });
+
+        if (ncmFaltando) {
+            mostrarToast("O NCM é obrigatório! O setor de Compras é responsável por fornecer o NCM caso você não saiba.", "rgba(255, 59, 48, 0.95)");
+            return;
+        }
+
+        if (adicionados > 0) {
+            fecharCadastroManual();
+            atualizarUICarrinho();
+            mostrarToast(`${adicionados} itens adicionados à fila!`, "rgba(52, 199, 89, 0.9)");
+            document.getElementById('cartArea').style.display = 'block';
+            scrollToSection('cartArea');
+        } else {
+            mostrarToast("Preencha a descrição e o NCM de ao menos um item.", "rgba(255, 59, 48, 0.9)");
+        }
+    }
+
+    function irParaInicio() {
+        voltarParaPesquisa();
+        window.scrollTo(0, 0);
+    }
+
+    function limparTudo() {
+        if(confirm("Tem certeza que deseja apagar todas as pesquisas e limpar as listas?")) {
+            listaTotvs = [];
+            filaSolicitacoes = [];
+            limparQuadroPesquisa();
+            atualizarUITabelaTotvs();
+            atualizarUICarrinho();
+            irParaInicio();
+            document.getElementById('fallbackEmailAreaTotvs').style.display = 'none';
+            document.getElementById('fallbackEmailAreaCart').style.display = 'none';
+            mostrarToast("Tudo limpo e zerado!", "rgba(52, 199, 89, 0.9)");
+        }
+    }
+
+    function scrollToSection(id) {
+        const el = document.getElementById(id);
+        if(el && el.style.display !== 'none' && el.style.display !== '') {
+            const sentinel = document.getElementById(id === 'totvsArea' ? 'totvsSentinel' : 'cartSentinel');
+            const target = sentinel || el;
+            const topPos = target.getBoundingClientRect().top + window.pageYOffset - 85;
+            window.scrollTo({ top: topPos, behavior: 'smooth' });
+        }
+        else mostrarToast("A lista está vazia.", "rgba(255,149,0,0.9)");
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    function alternarSubmenu(elemento) {
+        elemento.classList.toggle('open');
+        const submenu = elemento.nextElementSibling;
+        submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+    }
+
+    // MENU LATERAL E CATÁLOGO
+    function filtrarMenuLateral() {
+        const termo = document.getElementById('menuSearchInput').value;
+        construirMenuLateral(termo);
+    }
+
+    function construirMenuLateral(termoPesquisa = '') {
+        const arvore = {};
+        const termo = termoPesquisa.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        produtosDatabase.forEach(p => {
+            const catOrig = (p.Categoria || "Sem Categoria").trim();
+            const subOrig = (p.Subcategoria || "").trim();
+            const catNorm = catOrig.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const subNorm = subOrig.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            if (termo && !catNorm.includes(termo) && !subNorm.includes(termo)) return;
+
+            if (!arvore[catOrig]) arvore[catOrig] = { total: 0, subs: {} };
+            arvore[catOrig].total++;
+
+            if (subOrig) {
+                if (!termo || catNorm.includes(termo) || subNorm.includes(termo)) {
+                    if (!arvore[catOrig].subs[subOrig]) arvore[catOrig].subs[subOrig] = 0;
+                    arvore[catOrig].subs[subOrig]++;
+                }
+            }
+        });
+
+        const categoriasOrdenadas = Object.keys(arvore).sort();
+        let html = '';
+        categoriasOrdenadas.forEach(cat => {
+            const subsKeys = Object.keys(arvore[cat].subs).sort();
+            const isOpen = termo ? 'open' : '';
+            const displayStyle = termo ? 'style="display:block;"' : '';
+
+            if (subsKeys.length === 0) {
+                html += `<li>
+                            <div class="menu-item" onclick="abrirCatalogo('${cat}', '')">
+                                <span>${cat}</span>
+                                <span class="menu-badge">${arvore[cat].total}</span>
+                            </div>
+                         </li>`;
+            } else {
+                html += `
+                    <li>
+                        <div class="menu-item ${isOpen}" onclick="alternarSubmenu(this)">
+                            <span>${cat}</span>
+                            <div style="display:flex; align-items:center;">
+                                <span class="menu-badge">${arvore[cat].total}</span>
+                                <span class="arrow">▶</span>
+                            </div>
+                        </div>
+                        <ul class="submenu" ${displayStyle}>
+                            <li onclick="abrirCatalogo('${cat}', '')">
+                                <div style="display:flex; justify-content:space-between; width:100%; padding-right:15px;">
+                                    <span>Ver Tudo</span>
+                                    <span class="menu-badge">${arvore[cat].total}</span>
+                                </div>
+                            </li>
+                            ${subsKeys.map(s => `
+                                <li onclick="abrirCatalogo('${cat}', '${s}')">
+                                    <div style="display:flex; justify-content:space-between; width:100%; padding-right:15px;">
+                                        <span>${s}</span>
+                                        <span class="menu-badge">${arvore[cat].subs[s]}</span>
+                                    </div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </li>`;
+            }
+        });
+        
+        if(html === '') html = '<li style="padding: 20px; text-align: center; color: var(--ios-text-muted); font-size: 13px;">Nenhum departamento encontrado.</li>';
+        document.getElementById('menuList').innerHTML = html;
+    }
+
+    function toggleCatalogoSubcat(btn) {
+        btn.classList.toggle('inactive');
+        btn.classList.toggle('active');
+        aplicarFiltroCatalogo();
+    }
+
+    function selectAllCatalogoSubcat(selectAll) {
+        document.querySelectorAll('#catalogoPillsContainer .pill-toggle').forEach(p => {
+            if(selectAll) {
+                p.classList.add('active'); p.classList.remove('inactive');
+            } else {
+                p.classList.remove('active'); p.classList.add('inactive');
+            }
+        });
+        aplicarFiltroCatalogo();
+    }
+
+    function aplicarFiltroCatalogo() {
+        const termo = document.getElementById('catalogoSearchInput').value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const activeSubcats = Array.from(document.querySelectorAll('#catalogoPillsContainer .pill-toggle.active')).map(b => b.getAttribute('data-subcat'));
+        const hasSubcatFilters = document.querySelectorAll('#catalogoPillsContainer .pill-toggle').length > 0;
+
+        const linhas = document.querySelectorAll('#browseTableBody tr.item-totvs-container');
+
+        linhas.forEach(linha => {
+            const textoBusca = linha.innerText.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const itemSubcat = linha.getAttribute('data-subcat');
+            
+            const matchTexto = textoBusca.includes(termo);
+            const matchSubcat = hasSubcatFilters ? activeSubcats.includes(itemSubcat) : true;
+
+            if (matchTexto && matchSubcat) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        });
+    }
+
+    function filtrarCatalogoPesquisa() {
+        aplicarFiltroCatalogo();
+    }
+
+    function abrirCatalogo(categoria, subcategoria) {
+        toggleSidebar(); 
+        document.getElementById('searchSection').style.display = 'none';
+        document.getElementById('resultsArea').style.display = 'none';
+        document.getElementById('globalFiltersContainer') ? document.getElementById('globalFiltersContainer').style.display = 'none' : null;
+        document.getElementById('catalogoSearchInput').value = ''; 
+        
+        document.getElementById('browseSection').style.display = 'block';
+        document.getElementById('browseTitle').innerText = subcategoria ? `${categoria} > ${subcategoria}` : `${categoria}`;
+
+        let filtrados = produtosDatabase.filter(p => {
+            if ((p.Categoria || "Sem Categoria").trim() !== categoria) return false;
+            if (subcategoria && (p.Subcategoria || "").trim() !== subcategoria) return false;
+            return true;
+        });
+
+        let subcatSet = new Set();
+        if (!subcategoria) {
+            filtrados.forEach(item => {
+                let sub = (item.Subcategoria || '-').trim();
+                subcatSet.add(sub);
+            });
+        }
+
+        const filtersContainer = document.getElementById('catalogoFiltersContainer');
+        const pillsContainer = document.getElementById('catalogoPillsContainer');
+        
+        if (!subcategoria && subcatSet.size > 1) {
+            filtersContainer.style.display = 'block';
+            pillsContainer.innerHTML = Array.from(subcatSet).sort().map(sub => `<button class="pill-toggle active" data-subcat="${sub}" onclick="toggleCatalogoSubcat(this)" style="padding: 4px 10px; font-size: 11px;">${sub}</button>`).join('');
+        } else {
+            filtersContainer.style.display = 'none';
+            pillsContainer.innerHTML = '';
+        }
+
+        let html = '';
+        const limite = Math.min(filtrados.length, 500); 
+        for(let i = 0; i < limite; i++) {
+            const item = filtrados[i];
+            const prodSeguro = item.Produto.replace(/'/g, "\\'").replace(/\"/g, '\\"');
+            const sub = (item.Subcategoria || '-').trim();
+            const imgBusca = getImagemBusca(item.Produto, item.Categoria, sub, item.PartNumber);
+            
+            const catCodStr = `<div class="info-badge">Cód: ${item.Codigo}</div>`;
+            const catNcmStr = item.NCM ? `<div class="info-badge ncm">NCM: ${item.NCM}</div>` : '';
+            
+            html += `
+                <tr class="item-totvs-container" data-codigo="${item.Codigo}" data-subcat="${sub}">
+                    <td style="font-family:monospace; font-weight:600; vertical-align:middle;">${item.Codigo}</td>
+                    <td style="vertical-align:middle;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div class="img-wrapper">
+                                <img src="${imgBusca}" class="img-thumb img-thumb-small" onclick="abrirZoom(this, '${prodSeguro}', event)" onerror="this.style.display='none'" loading="lazy">
+                                <div class="img-disclaimer">* Ilustrativa</div>
+                            </div>
+                            <div>
+                                <div style="font-weight:500; margin-bottom:4px;">${item.Produto}</div>
+                                <div style="font-size:12px; color:var(--ios-text-muted);">${sub}</div>
+                                <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">
+                                    ${catCodStr} ${catNcmStr}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align: right; vertical-align:middle;">
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <button class="btn-small" style="color: var(--ios-red); background: rgba(255,59,48,0.1); width: 100%; font-size: 11px;" onclick="solicitarNcmDiferente('${prodSeguro}')">📝 NCM Diferente</button>
+                            <div style="display:flex; gap:5px; justify-content:flex-end;">
+                                <button class="btn-small btn-copy-only" style="flex:1; padding:6px 0;" onclick="copyToClipboard('${item.Codigo}')" title="Copiar">${iSVG.copy}</button>
+                                <button class="btn-small action-add btn-add-totvs" style="flex:1; padding:6px 0;" data-codigo="${item.Codigo}" data-produto="${prodSeguro}" onclick="adicionarNaTabelaTotvs('${item.Codigo}', '${prodSeguro}', this)">${iSVG.add} Add</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+        document.getElementById('browseTableBody').innerHTML = html;
+        sincronizarBotoesETela(); 
+    }
+
+    function voltarParaPesquisa() {
+        document.getElementById('browseSection').style.display = 'none';
+        document.getElementById('searchSection').style.display = 'block';
+        if (document.getElementById('resultsList').innerHTML !== '') {
+            document.getElementById('resultsArea').style.display = 'block';
+            document.getElementById('globalFiltersContainer') ? document.getElementById('globalFiltersContainer').style.display = 'block' : null;
+        }
+    }
+
+    // MOTOR DE BUSCA
+    const stopWords = new Set(["de", "da", "do", "dos", "das", "para", "com", "sem", "e", "ou", "tipo", "modelo", "em", "no", "na", "os", "as"]);
+
+    const dicionarioSinonimos = {
+        "sc": ["saco", "sacos"], "cx": ["caixa", "caixas"], "pc": ["peca", "pcs", "peças"],
+        "pç": ["peca", "pcs"], "pct": ["pacote", "pcte"], "rl": ["rolo"], "gl": ["galao"],
+        "cj": ["conjunto"], "jg": ["jogo"], "pr": ["par", "pares"],
+        "bota": ["botina", "coturno", "galocha", "calcado", "sapato"],
+        "botina": ["bota", "coturno", "galocha", "calcado", "sapato"],
+        "pendrive": ["pen drive", "usb", "memoria"], "pen drive": ["pendrive", "usb", "memoria"],
+        "durex": ["fita adesiva", "fita durex", "fita crepe"], "fita adesiva": ["durex"],
+        "monitor": ["display", "tela"], "tela": ["monitor", "display"],
+        "nobreak": ["ups", "bateria", "no break"], "ups": ["nobreak", "no break"],
+        "clipes": ["clipe", "clips"], "clips": ["clipe", "clipes"],
+        "cadeira": ["poltrona", "assento"], "poltrona": ["cadeira", "assento"], "mouse": ["rato"],
+        "hd": ["disco", "storage", "disco rigido", "ssd"], "ssd": ["hd", "disco", "disco solido", "storage"],
+        "pc": ["computador", "desktop", "microcomputador"], "computador": ["pc", "desktop", "microcomputador"],
+        "notebook": ["laptop"], "hp": ["hpe", "hewlett packard"], "hpe": ["hp", "hewlett packard"],
+        "gbic": ["sfp", "sfp+", "transceiver", "transceptor"],
+        "parafuso": ["paraf", "fixador", "atarraxante", "soberba"], "parafuço": ["parafuso"],
+        "parafuzo": ["parafuso"], "parafs": ["parafuso"], "phillips": ["philips", "fenda cruzada", "estrela"],
+        "fenda": ["fenda simples"], "brocante": ["pontabroca", "broca", "ponta broca"],
+        "ponta broca": ["brocante", "pontabroca"], "lentilha": ["flangeado"], "zincado": ["zinc", "galvanizado"],
+        "bicromatizado": ["bicrom", "amarelo"], "pial": ["legrand", "pial plus"], "legrand": ["pial", "pial plus"],
+        "ar condicionado": ["ar cond", "climatizador", "split", "condensadora", "evaporadora"],
+        "split": ["ar condicionado"], "k7": ["cassete", "cassette"]
+    };
+
+    let searchCache = null;      
+    let uniqueWordsDB = new Set(); 
+
+    function normalizeText(text) {
+        if (!text) return "";
+        let n = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        n = n.replace(/\bauto\s+atarraxante\b/g, "autoatarraxante");
+        n = n.replace(/\bponta\s+broca\b/g, "pontabroca");
+        n = n.replace(/\bpen\s+drive\b/g, "pendrive");
+        n = n.replace(/(\d+),(\d+)/g, "$1.$2");
+        n = n.replace(/(\d+[,.]?\d*)\s*[xX*]\s*(\d+[,.]?\d*)/g, "$1x$2"); 
+        n = n.replace(/(\d+)\s+(mm|cm|m|v|w|a|va|kva|btus|btu|gb|tb|mb|pol|polegadas)\b/g, "$1$2");
+        n = n.replace(/[^\w\s\.]/gi, ' ');
+        return n.replace(/\s+/g, ' ').trim();
+    }
+
+    function tokenize(text) {
+        if (!text) return [];
+        return text.split(/\s+/).filter(word => word.length > 0 && !stopWords.has(word));
+    }
+
+    function getPluralSingular(word) {
+        if (word.length <= 3) return [word];
+        if (word.endsWith('s') && !word.endsWith('ss') && !word.endsWith('is')) {
+            return [word, word.slice(0, -1)];
+        } else {
+            return [word, word + 's'];
+        }
+    }
+
+    function levenshtein(a, b, maxDist) {
+        if (a === b) return 0;
+        if (Math.abs(a.length - b.length) > maxDist) return maxDist + 1;
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+
+        let matrix = [];
+        for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+        for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                }
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+
+    function createSearchCache(database) {
+        searchCache = [];
+        uniqueWordsDB = new Set();
+
+        for (const item of database) {
+            const prodNorm = normalizeText(item.Produto);
+            const pnNorm = normalizeText(item.PartNumber || '');
+            const codNorm = normalizeText(item.Codigo || '');
+            const catNorm = normalizeText(item.Categoria || '');
+            const subNorm = normalizeText(item.Subcategoria || '');
+            
+            const allText = `${prodNorm} ${catNorm} ${subNorm} ${pnNorm} ${codNorm}`;
+            const tokensArray = tokenize(allText);
+            
+            tokensArray.forEach(t => uniqueWordsDB.add(t));
+
+            searchCache.push({
+                item: item,
+                prodNorm: prodNorm,
+                pnNorm: pnNorm,
+                codNorm: codNorm,
+                catNorm: catNorm,
+                subNorm: subNorm,
+                tokensSet: new Set(tokensArray),
+                tokensArray: tokensArray
+            });
+        }
+    }
+
+    function limparLixoDeCopiarColar(linha) {
+        let txt = linha.trim();
+        txt = txt.replace(/^\s*\d+(?:[,.]\d+)?\s*(?:un|unid|unidades?|p[cç]s?|pe[cç]as?|cxs?|x)?\s*[-–_*:.)\]]+\s+/i, '');
+        txt = txt.replace(/\s+[-–_*:(\[]*\s*\d+(?:[,.]\d+)?\s*(?:un|unid|unidades?|p[cç]s?|pe[cç]as?|cxs?|x)?\s*$/i, '');
+        return txt.trim();
+    }
+
+    function findMatches(query) {
+        if (!query || !query.trim() || !produtosDatabase) return [];
+
+        if (!searchCache || searchCache.length !== produtosDatabase.length) {
+            createSearchCache(produtosDatabase);
+        }
+
+        const queryNorm = normalizeText(query);
+        const queryTokens = tokenize(queryNorm);
+        if (queryTokens.length === 0) return [];
+
+        const queryTokenGroups = queryTokens.map(token => {
+            let group = [];
+            let variations = getPluralSingular(token);
+            variations.forEach(v => group.push({ text: v, isOriginal: (v === token), isLevenshtein: false }));
+
+            if (dicionarioSinonimos[token]) {
+                dicionarioSinonimos[token].forEach(syn => group.push({ text: syn, isOriginal: false, isLevenshtein: false }));
+            }
+
+            if (token.length >= 5) {
+                let maxDist = token.length <= 7 ? 1 : 2;
+                uniqueWordsDB.forEach(dbWord => {
+                    if (levenshtein(token, dbWord, maxDist) <= maxDist) {
+                        if (!group.some(g => g.text === dbWord)) {
+                            group.push({ text: dbWord, isOriginal: false, isLevenshtein: true });
+                        }
+                    }
+                });
+            }
+            return group;
+        });
+
+        let results = [];
+        for (const cacheItem of searchCache) {
+            let totalScore = 0;
+            let matchedGroupsCount = 0;
+            let isExactMatch = false;
+
+            if (searchModes.desc && cacheItem.prodNorm === queryNorm) { totalScore += 100000; isExactMatch = true; }
+            if (searchModes.pn && cacheItem.pnNorm === queryNorm && queryNorm !== '') { totalScore += 90000; isExactMatch = true; }
+            if (searchModes.cod && cacheItem.codNorm === queryNorm && queryNorm !== '') { totalScore += 90000; isExactMatch = true; }
+            
+            if (searchModes.cat && cacheItem.catNorm === queryNorm) { totalScore += 80000; }
+            if (searchModes.sub && cacheItem.subNorm === queryNorm) { totalScore += 80000; }
+            
+            if (searchModes.desc && cacheItem.prodNorm.startsWith(queryNorm + " ")) totalScore += 50000;
+
+            for (const group of queryTokenGroups) {
+                let groupMatched = false;
+                let maxGroupScore = 0;
+
+                for (const wordObj of group) {
+                    let wordScore = 0;
+                    let multiplier = wordObj.isOriginal ? 1 : (wordObj.isLevenshtein ? 0.5 : 0.9);
+                    let isShortWord = wordObj.text.length <= 3;
+
+                    if (searchModes.desc) {
+                        if (cacheItem.tokensSet.has(wordObj.text)) {
+                            wordScore += 1000 * multiplier;
+                            groupMatched = true;
+                        } else {
+                            for (const prodToken of cacheItem.tokensArray) {
+                                if (prodToken.startsWith(wordObj.text)) {
+                                    wordScore += 500 * multiplier;
+                                    groupMatched = true;
+                                    break;
+                                } else if (!isShortWord && prodToken.includes(wordObj.text)) {
+                                    wordScore += 200 * multiplier;
+                                    groupMatched = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (searchModes.pn && (cacheItem.pnNorm === wordObj.text || (!isShortWord && cacheItem.pnNorm.includes(wordObj.text)))) { wordScore += 800 * multiplier; groupMatched = true; }
+                    if (searchModes.cod && (cacheItem.codNorm === wordObj.text || (!isShortWord && cacheItem.codNorm.includes(wordObj.text)))) { wordScore += 800 * multiplier; groupMatched = true; }
+                    if (searchModes.cat && (cacheItem.catNorm === wordObj.text || (!isShortWord && cacheItem.catNorm.includes(wordObj.text)))) { wordScore += 300 * multiplier; groupMatched = true; }
+                    if (searchModes.sub && (cacheItem.subNorm === wordObj.text || (!isShortWord && cacheItem.subNorm.includes(wordObj.text)))) { wordScore += 300 * multiplier; groupMatched = true; }
+
+                    if (wordScore > maxGroupScore) maxGroupScore = wordScore;
+                }
+
+                if (groupMatched) {
+                    totalScore += maxGroupScore;
+                    matchedGroupsCount++;
+                }
+            }
+
+            let matchRatio = matchedGroupsCount / queryTokenGroups.length;
+            let isValidMatch = matchRatio >= 0.45;
+
+            if (isValidMatch) {
+                if (matchRatio === 1) totalScore += 10000;
+                else totalScore += 2000 * matchRatio; 
+                
+                if (cacheItem.prodNorm.includes(queryNorm)) totalScore += 5000;
+                if (cacheItem.prodNorm.startsWith(queryNorm)) totalScore += 2000;
+                
+                totalScore += (100 / (cacheItem.prodNorm.length || 1));
+
+                results.push({ 
+                    item: cacheItem.item, 
+                    score: totalScore, 
+                    isExactMatch: isExactMatch, 
+                    allTokens: (matchRatio === 1) 
+                });
+            }
+        }
+        
+        return results.sort((a, b) => b.score - a.score).slice(0, 150);
+    }
+
+    // FILTROS E PAGINAÇÃO
+    function toggleLocalCategory(btn) {
+        btn.classList.toggle('inactive');
+        btn.classList.toggle('active');
+        const card = btn.closest('.result-card');
+        card.setAttribute('data-limit', '5'); 
+        atualizarPaginacaoCartao(card);
+    }
+
+    function selectAllLocalTags(btn, selectAll) {
+        const card = btn.closest('.result-card');
+        const pills = card.querySelectorAll('.card-tags-container .pill-toggle');
+        pills.forEach(p => {
+            if(selectAll) {
+                p.classList.add('active'); p.classList.remove('inactive');
+            } else {
+                p.classList.remove('active'); p.classList.add('inactive');
+            }
+        });
+        card.setAttribute('data-limit', '5'); 
+        atualizarPaginacaoCartao(card);
+    }
+
+    function atualizarPaginacaoCartao(card) {
+        const activeCats = Array.from(card.querySelectorAll('.card-tags-container .pill-toggle.active')).map(btn => btn.getAttribute('data-cat').toUpperCase());
+        const limit = parseInt(card.getAttribute('data-limit')) || 5;
+        const altItems = card.querySelectorAll('.alt-item');
+        const btnVerMais = card.querySelector('.btn-ver-mais');
+
+        let matchingCount = 0;
+        let totalValidos = 0;
+
+        altItems.forEach(item => {
+            const cat = item.getAttribute('data-cat').toUpperCase();
+            if (activeCats.length === 0 || activeCats.includes(cat)) {
+                totalValidos++;
+            }
+        });
+
+        altItems.forEach(item => {
+            const cat = item.getAttribute('data-cat').toUpperCase();
+            const isMatch = activeCats.length === 0 || activeCats.includes(cat);
+
+            if (isMatch) {
+                if (matchingCount < limit) {
+                    item.style.display = 'flex';
+                    item.classList.remove('alt-hidden');
+                } else {
+                    item.style.display = 'none';
+                    item.classList.add('alt-hidden');
+                }
+                matchingCount++;
+            } else {
+                item.style.display = 'none';
+                item.classList.remove('alt-hidden');
+            }
+        });
+
+        if (btnVerMais) {
+            const ocultos = totalValidos - limit;
+            if (ocultos > 0) {
+                btnVerMais.style.display = 'inline-flex';
+                btnVerMais.innerHTML = `↓ Ver Mais (${ocultos} ocultos)`;
+            } else {
+                btnVerMais.style.display = 'none';
+            }
+        }
+    }
+
+    function verMaisAlternativas(btn) {
+        const card = btn.closest('.result-card');
+        let limit = parseInt(card.getAttribute('data-limit')) || 5;
+        limit += 5;
+        card.setAttribute('data-limit', limit);
+        atualizarPaginacaoCartao(card);
+    }
+
+    // ADICIONAR E BUSCA
+    function adicionarTodosDoQuadro(btnElement) {
+        const card = btnElement.closest('.result-card');
+        const chk = card.querySelector('.chk-multi-mode');
+        if(chk && !chk.checked) {
+            chk.checked = true;
+            card.classList.add('multi-mode-active');
+        }
+
+        const botoesAdd = card.querySelectorAll('.btn-add-totvs');
+        let adicionados = 0;
+
+        botoesAdd.forEach(btn => {
+            const codigo = btn.getAttribute('data-codigo');
+            const produto = btn.getAttribute('data-produto');
+            const itemElement = btn.closest('.alt-item') || btn.closest('.main-match');
+            if (itemElement.style.display !== 'none' && !listaTotvs.some(item => item.codigo === codigo)) {
+                listaTotvs.push({ codigo: codigo, produto: produto, qtd: 1 });
+                adicionados++;
+            }
+        });
+
+        if (adicionados > 0) {
+            atualizarUITabelaTotvs();
+            mostrarToast(`${adicionados} itens adicionados à lista!`, "rgba(52, 199, 89, 0.9)");
+        } else {
+            mostrarToast("Os itens visíveis já estão na lista.", "rgba(255, 149, 0, 0.9)");
+        }
+    }
+
+    function executeSearch() {
+        const input = document.getElementById('searchInput').value;
+        if (!input.trim()) return;
+
+        const lines = input.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        const resultsList = document.getElementById('resultsList');
+        
+        resultsList.innerHTML = '';
+        let foundCount = 0;
+
+        lines.forEach((originalLine, lineIndex) => {
+            const cleanLine = limparLixoDeCopiarColar(originalLine);
+            if (!cleanLine) return;
+
+            const matches = findMatches(cleanLine);
+            const card = document.createElement('div');
+            const termoSeguro = cleanLine.replace(/'/g, "\\'").replace(/\"/g, '\\"');
+            const termoOriginalSeguro = originalLine.replace(/'/g, "\\'").replace(/\"/g, '\\"');
+            
+            if (matches.length > 0) {
+                foundCount++;
+                const item = matches[0].item;
+                const isExact = matches[0].isExactMatch;
+                const prodSeguro = item.Produto.replace(/'/g, "\\'").replace(/\"/g, '\\"');
+                
+                let localCategorySet = new Set();
+                for (let i = 1; i < matches.length; i++) {
+                    let cat = (matches[i].item.Categoria && matches[i].item.Categoria !== '-') ? matches[i].item.Categoria : 'Diversos';
+                    localCategorySet.add(cat);
+                }
+
+                card.className = `result-card ${isExact ? 'exact' : 'partial'}`;
+                card.setAttribute('data-codigo-principal', item.Codigo);
+                card.setAttribute('data-card-index', lineIndex);
+                card.setAttribute('data-limit', '5');
+
+                let statusBadge = isExact ? `<span class="ios-badge badge-exact">${iSVG.check} Match Exato</span>` : `<span class="ios-badge badge-partial">⚠ Semelhante</span>`;
+                const pn = String(item.PartNumber || '').trim();
+                const partNumHtml = (pn && pn !== "0") ? `<div class="info-badge">PN: ${pn}</div>` : '';
+                
+                let alternativasHtml = '';
+                if (matches.length > 1) {
+                    let tagsHtml = '';
+                    if (localCategorySet.size > 0) {
+                        tagsHtml = `
+                        <div class="card-tags-container" style="margin-bottom:12px; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                                <span style="font-size:12px; font-weight:700; color:var(--ios-text-muted);">Filtrar Semelhantes:</span>
+                                <div style="display:flex; gap:5px;">
+                                    <button class="btn-small" style="font-size:10px; padding:4px 8px; width:auto;" onclick="selectAllLocalTags(this, true)">✓ Todas</button>
+                                    <button class="btn-small" style="font-size:10px; padding:4px 8px; width:auto; background:rgba(255,59,48,0.1); color:var(--ios-red);" onclick="selectAllLocalTags(this, false)">✕ Nenhuma</button>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;">
+                                ${Array.from(localCategorySet).map(cat => `<button class="pill-toggle active" data-cat="${cat}" onclick="toggleLocalCategory(this)" style="padding: 4px 10px; font-size: 11px;">${cat}</button>`).join('')}
+                            </div>
+                        </div>`;
+                    }
+
+                    alternativasHtml = `
+                    <div class="alternatives-box">
+                        ${tagsHtml}
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                            <div class="alternatives-title" style="margin:0;">Opções Semelhantes</div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <label style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--ios-blue); font-weight:600; cursor:pointer;">
+                                    <input type="checkbox" class="chk-multi-mode" onchange="this.closest('.result-card').classList.toggle('multi-mode-active', this.checked); sincronizarBotoesETela();">
+                                    ☑️ Permitir selecionar vários
+                                </label>
+                                <button class="btn-small" style="width:auto; padding:4px 10px; font-size:11px;" onclick="adicionarTodosDoQuadro(this)">
+                                    ${iSVG.add} Add Todos
+                                </button>
+                            </div>
+                        </div>`;
+                    
+                    for (let i = 1; i < matches.length; i++) {
+                        const alt = matches[i].item;
+                        const altProdSeguro = alt.Produto.replace(/'/g, "\\'").replace(/\"/g, '\\"');
+                        const altImgBusca = getImagemBusca(alt.Produto, alt.Categoria, alt.Subcategoria, alt.PartNumber);
+                        const altCatStr = (alt.Categoria && alt.Categoria !== '-') ? alt.Categoria : 'Diversos';
+                        
+                        const altCodStr = `<div class="info-badge">Cód: ${alt.Codigo}</div>`;
+                        const altNcmStr = alt.NCM ? `<div class="info-badge ncm">NCM: ${alt.NCM}</div>` : '';
+                        
+                        let isHidden = i > 5;
+                        let hiddenClass = isHidden ? 'style="display:none;" class="alt-item item-totvs-container alt-hidden"' : 'class="alt-item item-totvs-container"';
+
+                        alternativasHtml += `
+                            <div ${hiddenClass} data-codigo="${alt.Codigo}" data-cat="${altCatStr}">
+                                <div class="alt-item-content">
+                                    <div class="img-wrapper img-wrapper-small">
+                                        <img src="${altImgBusca}" class="img-thumb img-thumb-small" onclick="abrirZoom(this, '${altProdSeguro}', event)" onerror="this.style.display='none'" loading="lazy">
+                                        <div class="img-disclaimer img-disclaimer-small">* Ilustrativa</div>
+                                    </div>
+                                    <div class="alt-text">
+                                        ${alt.Produto}<br>
+                                        <span style="color:var(--ios-text-muted); font-size:12px; font-weight:normal;">${alt.Categoria}</span>
+                                        <div style="display:flex; flex-wrap:wrap; margin-top:4px;">
+                                            ${altCodStr} ${altNcmStr}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alt-actions">
+                                    <button class="btn-small" style="color: var(--ios-red); background: rgba(255,59,48,0.1); width: 100%; margin-bottom: 6px;" onclick="solicitarNcmDiferente('${altProdSeguro}')">📝 NCM Diferente</button>
+                                    <div style="display:flex; gap:6px;">
+                                        <button class="btn-small btn-copy-only" style="flex:1;" onclick="copyToClipboard('${alt.Codigo}')">${iSVG.copy}</button>
+                                        <button class="btn-small action-add btn-add-totvs" style="flex:1;" data-codigo="${alt.Codigo}" data-produto="${altProdSeguro}" onclick="adicionarNaTabelaTotvs('${alt.Codigo}', '${altProdSeguro}', this)">${iSVG.add} Add</button>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }
+                    
+                    if (matches.length > 6) {
+                        const ocultos = matches.length - 1 - 5;
+                        alternativasHtml += `
+                            <div style="text-align: center; padding-top: 15px; margin-top: 10px; border-top: 0.5px solid rgba(0,0,0,0.05);">
+                                <button class="btn-small btn-ver-mais" style="width: auto; padding: 10px 20px; border: 1px solid rgba(0,122,255,0.2);" onclick="verMaisAlternativas(this)">
+                                    ↓ Ver Mais (${ocultos} ocultos)
+                                </button>
+                            </div>
+                        `;
+                    }
+
+                    alternativasHtml += `</div>`;
+                }
+
+                let botoesHtml = `<button class="btn btn-small" style="color: var(--ios-red); background: rgba(255,59,48,0.1); width: 100%; margin-bottom: 8px; font-size: 13px;" onclick="solicitarNcmDiferente('${prodSeguro}')">📝 NCM Diferente</button>`;
+                botoesHtml += `<button class="btn btn-gray btn-copy-only" style="width:100%; margin-bottom:8px; font-size: 13px;" onclick="copyToClipboard('${item.Codigo}')">${iSVG.copy} Copiar</button>`;
+                botoesHtml += `<button class="btn btn-success btn-add-totvs" data-codigo="${item.Codigo}" data-produto="${prodSeguro}" style="width:100%; font-size: 13px;" onclick="adicionarNaTabelaTotvs('${item.Codigo}', '${prodSeguro}', this)">${iSVG.add} Usar Este Item</button>`;
+
+                const codPrincipalStr = `<div class="info-badge">Cód: ${item.Codigo}</div>`;
+                const ncmPrincipalStr = item.NCM ? `<div class="info-badge ncm">NCM: ${item.NCM}</div>` : '';
+                const imgBuscaMain = getImagemBusca(item.Produto, item.Categoria, item.Subcategoria, item.PartNumber);
+
+                let requestBoxHtml = '';
+                if (!isExact) {
+                    requestBoxHtml = `
+                    <div class="request-box">
+                        <p class="request-title">⚠️ Nenhum dos itens da lista atende?</p>
+                        <button class="btn btn-warning btn-request" data-req-produto="${termoSeguro}" data-orig-text="📝 Solicitar Cadastro deste Item" style="width: 100%;" onclick="solicitarNcmDiferente('${termoSeguro}')">📝 Solicitar Cadastro deste Item</button>
+                    </div>`;
+                }
+                
+                card.innerHTML = `
+                    ${statusBadge}
+                    <div class="searched-tag">${iSVG.search} Buscado: "${termoOriginalSeguro}"</div>
+                    <div class="main-match match-item">
+                        <div class="item-content-wrapper">
+                            <div class="img-wrapper">
+                                <img src="${imgBuscaMain}" class="img-thumb" onclick="abrirZoom(this, '${prodSeguro}', event)" onerror="this.style.display='none'">
+                                <div class="img-disclaimer">* Ilustrativa</div>
+                            </div>
+                            <div class="item-details">
+                                <h3>${item.Produto}</h3>
+                                <p class="category">${item.Categoria || '-'}</p>
+                                <div style="display:flex; flex-wrap:wrap; margin-top:6px;">
+                                    ${codPrincipalStr} ${ncmPrincipalStr} ${partNumHtml}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-buttons">${botoesHtml}</div>
+                    </div>
+                    ${alternativasHtml}
+                    ${requestBoxHtml}`;
+            } else {
+                card.className = 'result-card not-found';
+                card.setAttribute('data-main-cat', 'Nenhum'); 
+                card.setAttribute('data-card-index', lineIndex);
+                card.innerHTML = `
+                    <span class="ios-badge badge-notfound">Nenhum Match</span>
+                    <div class="searched-tag">${iSVG.search} Buscado: "${termoOriginalSeguro}"</div>
+                    <div class="main-match">
+                        <div class="item-details"><h3 style="color: var(--ios-red);">Não Encontrado</h3></div>
+                    </div>
+                    
+                    <div class="request-box">
+                        <p class="request-title">⚠️ Nenhum dos itens da lista atende?</p>
+                        <button class="btn btn-warning btn-request" data-req-produto="${termoSeguro}" data-orig-text="📝 Solicitar Cadastro deste Item" style="width: 100%;" onclick="solicitarNcmDiferente('${termoSeguro}')">📝 Solicitar Cadastro deste Item</button>
+                    </div>`;
+            }
+            resultsList.appendChild(card);
+        });
+
+        document.getElementById('globalFiltersContainer') ? document.getElementById('globalFiltersContainer').innerHTML = '' : null;
+        document.getElementById('globalFiltersContainer') ? document.getElementById('globalFiltersContainer').style.display = 'none' : null;
+
+        document.getElementById('resultSummary').innerText = `${foundCount} / ${lines.length}`;
+        document.getElementById('resultsArea').style.display = 'block';
+        document.getElementById('initialTable').style.display = 'none';
+        
+        pesquisaEstaAtiva = true;
+        sincronizarBotoesCabecalho();
+        sincronizarBotoesETela();
+    }
+
+    function mostrarToast(mensagem, cor = "rgba(30, 30, 30, 0.85)") {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `${iSVG.info} ${mensagem}`;
+        toast.style.background = cor;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 3500); 
+    }
+
+    function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => mostrarToast(`Código ${text} copiado!`, "rgba(30, 30, 30, 0.85)")); }
+
+    function sincronizarBotoesETela() {
+        const codigosAdicionados = listaTotvs.map(item => item.codigo);
+        const produtosSolicitados = filaSolicitacoes.map(item => item.produto);
+
+        document.querySelectorAll('.btn-add-totvs').forEach(btn => {
+            const cod = btn.getAttribute('data-codigo');
+            if (codigosAdicionados.includes(cod)) {
+                btn.classList.add('btn-added'); btn.innerHTML = `${iSVG.check} Adicionado`;
+            } else {
+                btn.classList.remove('btn-added'); btn.innerHTML = btn.classList.contains('action-add') ? `${iSVG.add} Add` : `${iSVG.add} Usar Este Item`;
+            }
+        });
+
+        document.querySelectorAll('.btn-request').forEach(btn => {
+            const prod = btn.getAttribute('data-req-produto');
+            if (produtosSolicitados.includes(prod)) {
+                btn.classList.add('req-added', 'btn-added'); 
+                btn.innerHTML = `${iSVG.check} Solicitado para Equipe`;
+                btn.style.backgroundColor = ""; 
+                btn.style.color = "";
+            } else {
+                btn.classList.remove('req-added', 'btn-added'); 
+                btn.innerHTML = btn.getAttribute('data-orig-text');
+            }
+        });
+
+        document.querySelectorAll('.item-totvs-container').forEach(container => {
+            const cod = container.getAttribute('data-codigo');
+            if (codigosAdicionados.includes(cod)) container.classList.add('item-added');
+            else container.classList.remove('item-added');
+        });
+
+        document.querySelectorAll('.result-card').forEach(card => {
+            const isMultiMode = card.classList.contains('multi-mode-active');
+            const codPrinc = card.getAttribute('data-codigo-principal');
+            const resolvedBy = card.getAttribute('data-resolved-by');
+            
+            const isResolvedBySelf = resolvedBy && codigosAdicionados.includes(resolvedBy);
+            const isMainItemInTotvs = codPrinc && codigosAdicionados.includes(codPrinc);
+
+            if (!isMultiMode && (isResolvedBySelf || isMainItemInTotvs)) {
+                card.classList.add('item-added');
+            } else {
+                card.classList.remove('item-added');
+            }
+        });
+        
+        sincronizarBotoesCabecalho();
+    }
+
+    function adicionarNaTabelaTotvs(codigo, produto, btnElement = null) {
+        if (!listaTotvs.some(item => item.codigo === codigo)) {
+            listaTotvs.push({ codigo: codigo, produto: produto, qtd: 1 });
+            atualizarUITabelaTotvs();
+        }
+        if (btnElement) {
+            const card = btnElement.closest('.result-card');
+            if (card) {
+                card.setAttribute('data-resolved-by', codigo);
+            }
+        }
+        sincronizarBotoesETela();
+    }
+
+    function removerDaTabelaTotvs(index) {
+        listaTotvs.splice(index, 1);
+        atualizarUITabelaTotvs();
+    }
+    
+    function atualizarQtdTotvs(index, inputEl) {
+        let qtd = parseInt(inputEl.value);
+        if (isNaN(qtd) || qtd < 1) {
+            qtd = 1;
+            inputEl.value = 1;
+        }
+        listaTotvs[index].qtd = qtd;
+    }
+    
+    function limparListaConsulta() {
+        if (listaTotvs.length === 0) return;
+        if (confirm("Tem certeza que deseja remover todos os itens desta lista?")) {
+            listaTotvs = [];
+            atualizarUITabelaTotvs();
+            document.getElementById('fallbackEmailAreaTotvs').style.display = 'none';
+            mostrarToast("Lista de consulta limpa com sucesso!", "rgba(255, 59, 48, 0.9)");
+        }
+    }
+
+    function atualizarUITabelaTotvs() {
+        const area = document.getElementById('totvsArea');
+        const tbody = document.getElementById('tabelaTotvsBody');
+        const badge = document.getElementById('badgeTotvs');
+        
+        badge.innerText = listaTotvs.length;
+        if(listaTotvs.length === 0) badge.classList.add('hidden'); else badge.classList.remove('hidden');
+
+        if (listaTotvs.length === 0) { 
+            area.style.display = 'none'; 
+            area.classList.remove('is-frozen');
+            document.getElementById('fallbackEmailAreaTotvs').style.display = 'none';
+        } else {
+            area.style.display = 'block';
+            tbody.innerHTML = '';
+            listaTotvs.forEach((item, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><input type="number" min="1" value="${item.qtd || 1}" class="ios-search-input" style="width: 60px; padding: 6px; text-align: center; border-radius: 8px;" onchange="atualizarQtdTotvs(${index}, this)"></td>
+                        <td style="font-family:monospace; font-weight:600;">${item.codigo}</td>
+                        <td style="font-weight:500;">${item.produto}</td>
+                        <td style="text-align: right;">
+                            <div style="display:flex; gap:5px; justify-content:flex-end;">
+                                <button class="btn-small" onclick="copyToClipboard('${item.codigo}')" title="Copiar">${iSVG.copy}</button>
+                                <button class="btn-remove-icon" onclick="removerDaTabelaTotvs(${index})">${iSVG.trash}</button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        }
+        sincronizarBotoesETela();
+    }
+
+    function copiarApenasCodigos() {
+        if (listaTotvs.length === 0) return;
+        const texto = "CÓDIGO\n" + listaTotvs.map(item => item.codigo).join('\n');
+        navigator.clipboard.writeText(texto).then(() => mostrarToast(`Códigos copiados!`, "rgba(0,122,255,0.9)"));
+    }
+
+    function copiarTabelaCompleta() {
+        if (listaTotvs.length === 0) return;
+        const cabeçalho = "QTD\tCÓDIGO\tPRODUTO\n";
+        const linhas = listaTotvs.map(item => `${item.qtd || 1}\t${item.codigo}\t${item.produto}`).join('\n');
+        navigator.clipboard.writeText(cabeçalho + linhas).then(() => mostrarToast(`Tabela copiada! Cole no Excel.`, "rgba(0,122,255,0.9)"));
+    }
+
+    function enviarListaEmail() {
+        if (listaTotvs.length === 0) return;
+        let corpo = "Olá,\r\n\r\nSeguem os itens para consulta no sistema:\r\n\r\n";
+        corpo += "QTD | CÓDIGO      | PRODUTO\r\n";
+        corpo += "--------------------------------------------------------\r\n";
+        listaTotvs.forEach(item => {
+            let qtdStr = String(item.qtd || 1).padStart(3, ' ');
+            corpo += `${qtdStr} | ${item.codigo.padEnd(11, ' ')} | ${item.produto}\r\n`;
+        });
+        
+        const subject = "Lista para Consulta de Itens";
+        const toEmails = "estoque@grupofacimus.com.br;inventario@grupofacimus.com.br";
+        
+        const mailtoLink = `mailto:${toEmails}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(corpo)}`;
+        const outlookWebLink = `https://outlook.office.com/mail/deeplink/compose?to=${toEmails}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(corpo)}`;
+
+        window.location.href = mailtoLink;
+        
+        document.getElementById('outlookWebBtnTotvs').href = outlookWebLink;
+        document.getElementById('fallbackEmailAreaTotvs').style.display = 'block';
+        
+        mostrarToast("Abrindo E-mail...", "rgba(52, 199, 89, 0.9)");
+    }
+
+    function cadastroDireto(produto) {
+        if (filaSolicitacoes.length >= 50) { alert("Limite de Lote Atingido!"); return; }
+        if (filaSolicitacoes.some(item => item.produto === produto)) return;
+        filaSolicitacoes.push({ produto: produto, partNumber: "", ncm: "", un: "UN" });
+        atualizarUICarrinho();
+        mostrarToast("Adicionado à fila. Preencha o NCM antes de enviar!", "rgba(52, 199, 89, 0.9)");
+    }
+
+    function abrirModal(produto) {
+        if (filaSolicitacoes.length >= 50) { alert("Limite de Lote Atingido!"); return; }
+        if (filaSolicitacoes.some(item => item.produto === produto)) return;
+        produtoSendoCadastrado = produto;
+        document.getElementById('modalItemName').innerText = produto;
+        document.getElementById('modPN').value = ""; 
+        document.getElementById('modNCM').value = "";
+        document.getElementById('modNCM').style.border = "";
+        document.getElementById('modUN').value = "UN";
+        document.getElementById('pnWarningUnico').style.display = 'none';
+        document.getElementById('modPN').style.borderColor = '';
+        document.getElementById('modalCadastro').style.display = "flex";
+    }
+
+    function fecharModal() { document.getElementById('modalCadastro').style.display = "none"; }
+
+    function verificarPNUnico(input) {
+        const val = input.value.trim().toUpperCase();
+        const warning = document.getElementById('pnWarningUnico');
+        
+        if(val && val !== '0') {
+            const found = produtosDatabase.find(p => (p.PartNumber || '').trim().toUpperCase() === val);
+            if (found) {
+                warning.innerText = `⚠️ Já cadastrado! Cód: ${found.Codigo}`;
+                warning.style.display = 'block';
+                input.style.borderColor = 'var(--ios-red)';
+                input.style.boxShadow = 'inset 0 0 0 1px var(--ios-red)';
+                return;
+            }
+        }
+        warning.style.display = 'none';
+        input.style.borderColor = '';
+        input.style.boxShadow = '';
+    }
+
+    function confirmarCadastroModal() {
+        const ncmVal = document.getElementById('modNCM').value.trim();
+        if (!ncmVal) {
+            document.getElementById('modNCM').style.border = "1px solid var(--ios-red)";
+            mostrarToast("O NCM é obrigatório! O setor de Compras é responsável por fornecer o NCM caso você não saiba.", "rgba(255, 59, 48, 0.95)");
+            return;
+        }
+        document.getElementById('modNCM').style.border = "";
+        filaSolicitacoes.push({ 
+            produto: produtoSendoCadastrado, 
+            partNumber: document.getElementById('modPN').value.trim().toUpperCase(), 
+            ncm: ncmVal,
+            un: document.getElementById('modUN').value 
+        });
+        fecharModal(); atualizarUICarrinho(); 
+        mostrarToast("Item com detalhes salvo na fila!", "rgba(52, 199, 89, 0.9)");
+    }
+
+    function removerDoCarrinho(index) { filaSolicitacoes.splice(index, 1); atualizarUICarrinho(); }
+
+    function atualizarUICarrinho() {
+        const cartArea = document.getElementById('cartArea');
+        const badge = document.getElementById('badgeCadastros');
+        
+        badge.innerText = filaSolicitacoes.length;
+        if(filaSolicitacoes.length === 0) badge.classList.add('hidden'); else badge.classList.remove('hidden');
+
+        if (filaSolicitacoes.length === 0) { 
+            cartArea.style.display = 'none'; 
+            cartArea.classList.remove('is-frozen');
+            document.getElementById('fallbackEmailAreaCart').style.display = 'none';
+        } else {
+            cartArea.style.display = 'block'; 
+            const tbody = document.getElementById('cartTableBody');
+            tbody.innerHTML = filaSolicitacoes.map((item, i) => {
+                return `
+                <tr>
+                    <td><input type="text" class="ios-search-input cart-desc" value="${item.produto}" style="padding:10px;" onchange="filaSolicitacoes[${i}].produto=this.value"></td>
+                    <td><input type="text" class="ios-search-input cart-pn" placeholder="Opcional" value="${item.partNumber || ''}" style="padding:10px;" onchange="filaSolicitacoes[${i}].partNumber=this.value.toUpperCase()"></td>
+                    <td><input type="text" class="ios-search-input cart-ncm" placeholder="Obrigatório *" value="${item.ncm || ''}" style="padding:10px;" onchange="filaSolicitacoes[${i}].ncm=this.value"></td>
+                    <td>
+                        <select class="ios-search-input cart-un" style="padding:10px;" onchange="filaSolicitacoes[${i}].un=this.value">
+                            <option value="UN" ${item.un === 'UN' ? 'selected' : ''}>UN</option>
+                            <option value="PC" ${item.un === 'PC' ? 'selected' : ''}>PC</option>
+                            <option value="CX" ${item.un === 'CX' ? 'selected' : ''}>CX</option>
+                            <option value="KG" ${item.un === 'KG' ? 'selected' : ''}>KG</option>
+                            <option value="MT" ${item.un === 'MT' ? 'selected' : ''}>MT</option>
+                            <option value="RL" ${item.un === 'RL' ? 'selected' : ''}>RL</option>
+                            <option value="PR" ${item.un === 'PR' ? 'selected' : ''}>PR</option>
+                            <option value="CJ" ${item.un === 'CJ' ? 'selected' : ''}>CJ</option>
+                            <option value="LT" ${item.un === 'LT' ? 'selected' : ''}>LT</option>
+                            <option value="GL" ${item.un === 'GL' ? 'selected' : ''}>GL</option>
+                            <option value="PCT" ${item.un === 'PCT' ? 'selected' : ''}>PCT</option>
+                        </select>
+                    </td>
+                    <td style="text-align:center;"><button class="btn-remove-icon" style="margin:auto;" onclick="removerDoCarrinho(${i})"><svg><use href="#icon-trash"></use></svg></button></td>
+                </tr>`;
+            }).join('');
+        }
+        sincronizarBotoesETela();
+    }
+
+    async function enviarTodasSolicitacoes() {
+        const linhas = document.querySelectorAll('#cartTableBody tr');
+        let solicitacoesFinais = [];
+        let valid = true;
+        let ncmFaltando = false;
+
+        linhas.forEach((tr, index) => {
+            const desc = tr.querySelector('.cart-desc').value.trim();
+            const pn = tr.querySelector('.cart-pn').value.trim().toUpperCase();
+            const ncm = tr.querySelector('.cart-ncm').value.trim();
+            const un = tr.querySelector('.cart-un').value;
+            
+            if (!desc) {
+                valid = false;
+                tr.querySelector('.cart-desc').style.border = "1px solid var(--ios-red)";
+            } else {
+                tr.querySelector('.cart-desc').style.border = "none";
+            }
+
+            if (!ncm) {
+                valid = false;
+                ncmFaltando = true;
+                tr.querySelector('.cart-ncm').style.border = "1px solid var(--ios-red)";
+            } else {
+                tr.querySelector('.cart-ncm').style.border = "none";
+            }
+
+            if (desc && ncm) {
+                solicitacoesFinais.push({ produto: desc, partNumber: pn, ncm: ncm, un: un });
+            }
+        });
+
+        if (ncmFaltando) {
+            mostrarToast("O NCM é obrigatório! O setor de Compras é responsável por fornecer o NCM caso você não saiba.", "rgba(255, 59, 48, 0.95)");
+            return;
+        }
+
+        if (!valid) {
+            mostrarToast("Preencha a descrição de todos os itens.", "rgba(255, 59, 48, 0.9)");
+            return;
+        }
+
+        if (solicitacoesFinais.length === 0) return;
+
+        const btnSend = document.getElementById('btnSendCart');
+        btnSend.innerHTML = "⏳ Enviando..."; btnSend.style.pointerEvents = "none";
+        const urlFila = "https://portalprodutos-896cb-default-rtdb.firebaseio.com/fila_cadastros.json";
+        
+        try {
+            for (const item of solicitacoesFinais) {
+                await fetch(urlFila, { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json" }, 
+                    body: JSON.stringify({...item, token_seguranca: "FACIMUS2026", data: new Date().toLocaleDateString('pt-BR')}) 
+                });
+            }
+        } catch(e) {
+            console.warn("Firebase save warning:", e);
+        }
+        
+        let corpoEmailTexto = "Olá Equipe,\r\n\r\nSeguem os itens solicitados:\r\n\r\n";
+        corpoEmailTexto += "PN       | NCM      | UN | PRODUTO\r\n";
+        corpoEmailTexto += "--------------------------------------------------------\r\n";
+        solicitacoesFinais.forEach(i => {
+            let pnTexto = (i.partNumber ? i.partNumber : "-").padEnd(8, ' ');
+            let ncmTexto = (i.ncm ? i.ncm : "-").padEnd(8, ' ');
+            let unTexto = (i.un ? i.un : "UN").padEnd(2, ' ');
+            corpoEmailTexto += `${pnTexto} | ${ncmTexto} | ${unTexto} | ${i.produto}\r\n`;
+        });
+        corpoEmailTexto += "\r\n--------------------------------------------------------\r\n";
+        corpoEmailTexto += "Favor providenciar a inclusão.";
+        
+        const subject = "Solicitacao de Novos Cadastros";
+        const toEmails = "estoque@grupofacimus.com.br;inventario@grupofacimus.com.br";
+        
+        const mailtoLink = `mailto:${toEmails}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(corpoEmailTexto)}`;
+        const outlookWebLink = `https://outlook.office.com/mail/deeplink/compose?to=${toEmails}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(corpoEmailTexto)}`;
+
+        window.location.href = mailtoLink;
+        
+        document.getElementById('outlookWebBtnCart').href = outlookWebLink;
+        document.getElementById('fallbackEmailAreaCart').style.display = 'block';
+        
+        mostrarToast("Abrindo E-mail...", "rgba(52, 199, 89, 0.9)");
+        filaSolicitacoes = []; atualizarUICarrinho();
+        btnSend.innerHTML = `${iSVG.request} Enviar Solicitações para a Equipe`; btnSend.style.pointerEvents = "auto";
+        
+        if(!pesquisaEstaAtiva) {
+            sincronizarBotoesETela();
+        }
+    }
+
+    // TUTORIAL
+    let currentTutorialStep = 0;
+
+    const tutorialSteps = [
+        {
+            title: "1. O que este Portal faz?",
+            content: "Este portal é um catálogo de produtos da empresa.<br><br><span style='color:var(--ios-red); font-weight:bold;'>Ele NÃO exibe quantidades em estoque!</span><br><br>Use-o apenas para consultar os códigos corretos para os seus pedidos, ou para solicitar a criação de novos cadastros.",
+            icon: "info"
+        },
+        {
+            title: "2. Navegando pelo Catálogo",
+            content: "Use o botão <span class='tut-pulse' style='display:inline-block; padding: 2px 8px; background: rgba(0,122,255,0.1); color: var(--ios-blue); border-radius: 8px;'><b>☰</b></span> no topo esquerdo para abrir os Departamentos.<br><br>As bolinhas ao lado de cada categoria mostram a quantidade exata de produtos cadastrados lá dentro.",
+            icon: "menu"
+        },
+        {
+            title: "3. Montando sua Lista",
+            content: "Pesquisou um item e encontrou? Clique em <button class='btn-success' style='padding: 6px 12px; border-radius: 8px; border:none; color:white; font-size:12px; margin:0 5px; pointer-events:none;'>+ Usar Este Item</button>.<br><br>Uma <b>Lista para Consulta</b> aparecerá na tela. Você pode copiar todos os códigos de uma vez ou enviá-los por e-mail à equipe.",
+            icon: "list"
+        },
+        {
+            title: "4. Problemas com o E-mail?",
+            content: "Ao clicar em 'Enviar por E-mail', o seu Outlook deve abrir sozinho.<br><br>Se ele der erro ou não abrir, não se desespere! <span class='didactic-arrow-down'>↓</span><br>Um botão <button class='btn-gray' style='padding: 6px 12px; border-radius: 8px; border:1px solid #ccc; font-size:12px; margin:0 5px; pointer-events:none;'>Abrir no Outlook Web</button> aparecerá logo abaixo. Clique nele e seu e-mail abrirá perfeitamente no navegador!",
+            icon: "mail"
+        },
+        {
+            title: "5. Solicitando Cadastros",
+            content: "Se o produto não existe, clique no botão <span class='tut-pulse-orange'>📝 Solicitar cadastro</span> no fim da pesquisa.<br><br>Você também pode clicar no ícone de <b style='color:var(--ios-blue)'>Tabela</b> no topo direito, copiar várias linhas direto do seu <b>Excel</b> e colar de uma vez só no quadro!",
+            icon: "request"
+        }
+    ];
+
+    function abrirTutorial() {
+        currentTutorialStep = 0;
+        renderTutorialStep();
+        document.getElementById('modalTutorial').style.display = 'flex';
+    }
+
+    function fecharTutorial() {
+        document.getElementById('modalTutorial').style.display = 'none';
+    }
+
+    function mudarStepTutorial(dir) {
+        currentTutorialStep += dir;
+        if (currentTutorialStep < 0) currentTutorialStep = 0;
+        if (currentTutorialStep >= tutorialSteps.length) {
+            fecharTutorial();
+            return;
+        }
+        renderTutorialStep();
+    }
+
+    function renderTutorialStep() {
+        const step = tutorialSteps[currentTutorialStep];
+        
+        let dotsHtml = '';
+        for(let i=0; i<tutorialSteps.length; i++) {
+            dotsHtml += `<div style="width:8px; height:8px; border-radius:50%; background: ${i === currentTutorialStep ? 'var(--ios-blue)' : 'rgba(0,0,0,0.2)'}; transition: 0.3s;"></div>`;
+        }
+        document.getElementById('tutorialDots').innerHTML = dotsHtml;
+        
+        const body = document.getElementById('tutorialBody');
+        body.innerHTML = `
+            <div class="tut-fade-in" style="text-align: center;">
+                <div class="tut-icon-wrapper">
+                    ${iSVG[step.icon]}
+                </div>
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">${step.title}</h3>
+                <p style="font-size: 14px; line-height: 1.6; color: var(--ios-text-main);">${step.content}</p>
+            </div>
+        `;
+        
+        document.getElementById('btnTutPrev').style.visibility = currentTutorialStep === 0 ? 'hidden' : 'visible';
+        document.getElementById('btnTutNext').innerText = currentTutorialStep === tutorialSteps.length - 1 ? 'Finalizar' : 'Próximo';
+    }
+</script>
+</body>
+</html>
